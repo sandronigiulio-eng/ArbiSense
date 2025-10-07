@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+import sys
+import pandas as pd
+import numpy as np
+
+def load_csv(path):
+    return pd.read_csv(path, index_col=0, parse_dates=True)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python scripts/calculate_spread.py ticker1.csv ticker2.csv")
+        sys.exit(1)
+
+    a = load_csv(sys.argv[1])
+    b = load_csv(sys.argv[2])
+
+    df = a.join(b, how='inner')
+    t1 = df.columns[0]
+    t2 = df.columns[1]
+
+    # Calcolo spread %
+    df['spread_pct'] = (df[t1] - df[t2]) / df[t2] * 100
+
+    # Definizione soglie segnali
+    threshold_alert = 0.5
+    threshold_strong = 1.0
+
+    # Funzione per assegnare segnali
+    def assign_signal(spread):
+        if abs(spread) >= threshold_strong:
+            return 'STRONG_SIGNAL'
+        elif abs(spread) >= threshold_alert:
+            return 'ALERT'
+        else:
+            return ''
+
+    df['signal'] = df['spread_pct'].apply(assign_signal)
+
+    # Salva il report finale
+    df.to_csv('data_sample/spread_report.csv', float_format='%.3f')
+    print("Saved improved report to data_sample/spread_report.csv")
+import sys
+import pandas as pd
+import numpy as np
+
+def load_csv(path):
+    return pd.read_csv(path, index_col=0, parse_dates=True)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python scripts/calculate_spread.py ticker1.csv ticker2.csv")
+        sys.exit(1)
+
+    a = load_csv(sys.argv[1])
+    b = load_csv(sys.argv[2])
+
+    df = a.join(b, how='inner')
+    t1 = df.columns[0]
+    t2 = df.columns[1]
+
+    # Calcolo spread %
+    df['spread_pct'] = (df[t1] - df[t2]) / df[t2] * 100
+
+    # Definizione soglie segnali
+    threshold_alert = 0.5
+    threshold_strong = 1.0
+
+    # Funzione per assegnare segnali
+    def assign_signal(spread):
+        if abs(spread) >= threshold_strong:
+            return 'STRONG_SIGNAL'
+        elif abs(spread) >= threshold_alert:
+            return 'ALERT'
+        else:
+            return ''
+
+    df['signal'] = df['spread_pct'].apply(assign_signal)
+
+    # Salva il report finale
+    df.to_csv('data_sample/spread_report.csv', float_format='%.3f')
+    print("Saved improved report to data_sample/spread_report.csv")
+
