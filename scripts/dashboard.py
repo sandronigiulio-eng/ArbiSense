@@ -9,7 +9,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent  # dalla cartella scripts alla root del repo
 DATA_FILE = BASE_DIR / "data_sample" / "spread_report_all_pairs_long.csv"
 JSON_FILE = BASE_DIR / "reports" / "spread_summary.json"
-    
+
 # --- Configurazione pagina ---
 st.set_page_config(
     page_title="ArbiSense Dashboard",
@@ -25,11 +25,11 @@ df['date_only'] = df['date'].dt.date  # serve per filtrare strong signals
 
 with open(JSON_FILE) as f:
     summary = json.load(f)
-    
+
 # --- Selezione coppia ---
 pair = st.selectbox("Seleziona coppia", df['pair'].unique())
 df_pair = df[df['pair'] == pair].copy()
-    
+
 # --- Selezione intervallo date ---
 start_date, end_date = st.date_input(
     "Seleziona intervallo date",
@@ -46,7 +46,7 @@ strong_points = df_pair_filtered[strong_mask]
 
 # --- Grafico interattivo ---
 fig = go.Figure()
-    
+
 # Linea spread   
 fig.add_trace(go.Scatter(
     x=df_pair_filtered['date'],
@@ -55,7 +55,7 @@ fig.add_trace(go.Scatter(
     name='Spread',
     line=dict(color='blue')
 ))
-    
+
 # Pallini rossi dei strong signals
 fig.add_trace(go.Scatter(
     x=strong_points['date'],                                                                                                         
@@ -64,7 +64,7 @@ fig.add_trace(go.Scatter(
     name='Strong Signal',
     marker=dict(color='red', size=10)
 ))
- 
+
 fig.update_layout(
     title=f"Andamento Spread & Strong Signals: {pair}",
     xaxis_title="Date",
@@ -79,7 +79,7 @@ st.subheader("Strong Signals")
 strong_table = strong_points[['date', 'spread_pct']].copy()
 strong_table = strong_table.sort_values('date')
 st.dataframe(strong_table)
-    
+
 # --- Statistiche base ---
 st.subheader("Statistiche Spread")
 stats = summary[pair]
