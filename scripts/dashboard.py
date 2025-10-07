@@ -5,8 +5,8 @@ import plotly.graph_objects as go
 import json
 from pathlib import Path
 
-# --- Percorsi file relativi al repository ---
-BASE_DIR = Path(__file__).parent.parent  # dalla cartella scripts alla root del repo
+# --- Percorsi relativi alla root del repository ---
+BASE_DIR = Path(__file__).parent.parent  # scripts/ → root
 DATA_FILE = BASE_DIR / "data_sample" / "spread_report_all_pairs_long.csv"
 JSON_FILE = BASE_DIR / "reports" / "spread_summary.json"
 
@@ -21,7 +21,7 @@ st.title("ArbiSense Dashboard - Strong Signals 📊")
 # --- Carica dati ---
 df = pd.read_csv(DATA_FILE)
 df['date'] = pd.to_datetime(df['date'])
-df['date_only'] = df['date'].dt.date  # serve per filtrare strong signals
+df['date_only'] = df['date'].dt.date  # utile per filtri
 
 with open(JSON_FILE) as f:
     summary = json.load(f)
@@ -47,7 +47,7 @@ strong_points = df_pair_filtered[strong_mask]
 # --- Grafico interattivo ---
 fig = go.Figure()
 
-# Linea spread   
+# Linea spread
 fig.add_trace(go.Scatter(
     x=df_pair_filtered['date'],
     y=df_pair_filtered['spread_pct'],
@@ -58,7 +58,7 @@ fig.add_trace(go.Scatter(
 
 # Pallini rossi dei strong signals
 fig.add_trace(go.Scatter(
-    x=strong_points['date'],                                                                                                         
+    x=strong_points['date'],
     y=strong_points['spread_pct'],
     mode='markers',
     name='Strong Signal',
