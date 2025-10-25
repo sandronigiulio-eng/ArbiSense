@@ -3,7 +3,17 @@ __pycache__/
 venv/
 .env
 .DS_Store
-data_sample/
 .vscode/
 .idea/
 venv/
+
+# --- ArbiSense CI allowlist (keep aggregated outputs, still ignore raw fetches) ---
+!data_sample/
+!data_sample/spread_report_*.csv
+!data_sample/spread_report_all_pairs_long.csv
+!data_sample/spread_report_all_pairs_wide.csv
+!data_sample/spread_report_all_pairs.xlsx
+
+!reports/
+!reports/*.png
+!reports/*.csv
