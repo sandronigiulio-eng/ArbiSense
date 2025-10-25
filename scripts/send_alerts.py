@@ -1,53 +1,49 @@
-#!/usr/bin/env python3
-import pandas as pd
-from pathlib import Path
-import smtplib
-from email.message import EmailMessage
+import os
+import json
+import requests
+from datetime import datetime
 
-# --- Config ---
-STRONG_SIGNALS_FILE = Path("reports/strong_signals.csv")
-NOTIFIED_FILE = Path("reports/notified_signals.csv")
+def send_telegram_message(token, chat_id, message):
+    """Invia un messaggio Telegram tramite il bot token"""
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {"chat_id": chat_id, "text": message, "parse_mode": "Markdown"}
+    response = requests.post(url, data=payload)
+    response.raise_for_status()
 
-EMAIL_FROM = "tuo@email.com"
-EMAIL_TO = "destinatario@email.com"
-SMTP_SERVER = "smtp.tuo-provider.com"
-SMTP_PORT = 587
-SMTP_USER = "tuo@email.com"
-SMTP_PASSWORD = "password"
+def main():
+    token = os.getenv("TELEGRAM_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
-# --- Leggi segnali forti ---
-df = pd.read_csv(STRONG_SIGNALS_FILE)
-df['date'] = pd.to_datetime(df['date'])
+    if not token or not chat_id:
+        print("⚠️ Telegram credentials missing. Skipping alert.")
+        return
 
-# --- Leggi segnali già notificati ---
-if NOTIFIED_FILE.exists():
-    notified = pd.read_csv(NOTIFIED_FILE)
-    notified['date'] = pd.to_datetime(notified['date'])
-else:
-    notified = pd.DataFrame(columns=['pair', 'date'])
+    signals_path = "data_sample/strong_signals.json"
+    if not os.path.exists(signals_path):
+        print("⚠️ No strong_signals.json found.")
+        return
 
-# --- Filtra nuovi segnali ---
-new_signals = df.merge(notified, on=['pair','date'], how='outer', indicator=True)
-new_signals = new_signals[new_signals['_merge'] == 'left_only'][['pair','date']]
+    with open(signals_path, "r") as f:
+        signals = json.load(f)
 
-if not new_signals.empty:
-    # --- Invia email ---
-    msg = EmailMessage()
-    msg['Subject'] = f"Nuovi strong signals ArbiSense ({len(new_signals)})"
-    msg['From'] = EMAIL_FROM
-    msg['To'] = EMAIL_TO
-    body = "\n".join([f"{row['pair']}: {row['date'].date()}" for idx,row in new_signals.iterrows()])
-    msg.set_content(body)
+    if not signals:
+        print("ℹ️ Nessun segnale forte trovato.")
+        return
 
-    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASSWORD)
-        server.send_message(msg)
-    print(f"Inviata email per {len(new_signals)} nuovi segnali.")
+    message_lines = [
+        f"📊 *ArbiSense — Segnali del {datetime.utcnow().strftime('%d/%m/%Y %H:%M UTC')}*",
+        ""
+    ]
 
-    # --- Aggiorna storico notifiche ---
-    updated_notified = pd.concat([notified, new_signals], ignore_index=True)
-    updated_notified.to_csv(NOTIFIED_FILE, index=False)
-else:
-    print("Nessun nuovo strong signal oggi.")
+    for s in signals:
+        message_lines.append(
+            f"- {s['pair']} → spread: {s['spread']:.4f}, z-score: {s['zscore']:.2f}"
+        )
 
+    message = "\n".join(message_lines)
+    send_telegram_message(token, chat_id, message)
+    print("✅ Alert Telegram inviato con successo!")
+
+if __name__ == "__main__":
+    main()
+# (qui incolla tutto lo script Python che ti ho dato)
