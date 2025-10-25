@@ -1,0 +1,13 @@
+{
+  "side": "long",
+  "z_enter": 2.5,
+  "z_exit": 0.8,
+  "z_stop": 4.0,
+  "max_hold": 3,
+  "latency_days": 2,
+  "notional": 250000,
+  "z_window": 60,
+  "spread_scale": "auto",
+  "fee_bps": 1.0,
+  "slippage_bps": 1.0
+}
