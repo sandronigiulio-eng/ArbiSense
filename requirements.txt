@@ -3,3 +3,7 @@ yfinance
 numpy
 plotly
 streamlit
+matplotlib
+requests
+openpyxl
+XlsxWriter
