@@ -1,0 +1,14 @@
+{
+  "created": "2025-10-26T22:21:21",
+  "decision_rule": "FIXED_PNL: OOS total >= 0 AND folds >= 3",
+  "folds_active": 3,
+  "oos_total_pnl_fixed": 2953.1840757907503,
+  "params": {
+    "z_enter": 2.6,
+    "z_exit": 2.4,
+    "z_stop": 4.0,
+    "max_hold": 5,
+    "side": "short",
+    "pair": "SWDA_L_EUNL_DE"
+  }
+}
