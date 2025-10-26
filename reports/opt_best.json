@@ -1,0 +1,21 @@
+{
+  "trades": 39,
+  "start": "2023-12-12",
+  "end": "2025-10-07",
+  "net_pnl_total": -95709.0774710806,
+  "CAGR": 0.0,
+  "vol_annualized": 1.525871233789643,
+  "Sharpe": 0.8617764127183144,
+  "MaxDD": -12.282344938398094,
+  "hit_rate": 0.1794871794871795,
+  "z_enter": 2.0,
+  "z_exit": 1.0,
+  "z_stop": 4.0,
+  "max_hold": 10,
+  "latency_days": 1,
+  "fee_bps": 1.0,
+  "slippage_bps": 1.0,
+  "notional": 250000.0,
+  "z_window": 60,
+  "spread_scale": "auto"
+}
