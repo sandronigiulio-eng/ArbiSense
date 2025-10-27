@@ -1,14 +1,19 @@
 {
-  "created": "2025-10-26T22:21:21",
-  "decision_rule": "FIXED_PNL: OOS total >= 0 AND folds >= 3",
-  "folds_active": 3,
-  "oos_total_pnl_fixed": 2953.1840757907503,
+  "created": "2025-10-27T19:47:35",
+  "decision_rule": "OOS total PnL >= 0 AND active folds >= 3",
+  "folds_active": 7,
+  "oos_total_pnl": 1590.2089696494386,
   "params": {
-    "z_enter": 2.6,
-    "z_exit": 2.4,
-    "z_stop": 4.0,
-    "max_hold": 5,
-    "side": "short",
-    "pair": "SWDA_L_EUNL_DE"
+    "z_enter": 2.0,
+    "z_exit": 2.0,
+    "z_stop": 3.6,
+    "max_hold": 7.0,
+    "latency": 0.0,
+    "spread_scale": 0.0001,
+    "notional": 250000.0,
+    "z_window": 40.0,
+    "sign": -1.0,
+    "pair": "SWDA_L_EUNL_DE",
+    "side": "short"
   }
 }
