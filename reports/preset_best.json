@@ -1,8 +1,8 @@
 {
-  "created": "2025-10-27T19:47:35",
+  "created": "2025-10-27T19:53:25",
   "decision_rule": "OOS total PnL >= 0 AND active folds >= 3",
   "folds_active": 7,
-  "oos_total_pnl": 1590.2089696494386,
+  "oos_total_pnl": 1236.965359992655,
   "params": {
     "z_enter": 2.0,
     "z_exit": 2.0,

@@ -1,0 +1,366 @@
+Last login: Sat Oct 25 17:33:03 on console
+giulio@Mac ~ % cd ~/Documents/ArbiSense
+pwd   # verifica che stampi .../Documents/ArbiSense
+
+pwd: too many arguments
+giulio@Mac ArbiSense % mkdir -p .github/workflows
+
+giulio@Mac ArbiSense % >....                                                                          
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run MVP (fetch -> calc -> plot)
+        run: |
+          python scripts/run_mvp.py
+
+      - name: Export strong signals
+        run: |
+          python scripts/export_strong_signals.py
+
+      - name: Send Telegram alerts (optional)
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python scripts/send_alerts.py || echo "send_alerts.py exited non-zero or found no signals"
+
+      - name: Commit and push generated data to branch data-updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data_sample/ reports/
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: nightly update data (auto) — $GITHUB_RUN_ID"
+            git push origin HEAD:data-updates
+          else
+            echo "No new/updated files to commit."
+          fi
+YML
+
+giulio@Mac ArbiSense % sed -n '1,240p' .github/workflows/nightly-update-data.yml
+
+name: Nightly update — ArbiSense data
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # ogni giorno a 00:00 UTC
+  workflow_dispatch: {}   # permette trigger manuale
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run MVP (fetch -> calc -> plot)
+        run: |
+          python scripts/run_mvp.py
+
+      - name: Export strong signals
+        run: |
+          python scripts/export_strong_signals.py
+
+      - name: Send Telegram alerts (optional)
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python scripts/send_alerts.py || echo "send_alerts.py exited non-zero or found no signals"
+
+      - name: Commit and push generated data to branch data-updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data_sample/ reports/
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: nightly update data (auto) — $GITHUB_RUN_ID"
+            git push origin HEAD:data-updates
+          else
+            echo "No new/updated files to commit."
+          fi
+giulio@Mac ArbiSense % git add .github/workflows/nightly-update-data.yml
+git commit -m "ci: add nightly update workflow (push to data-updates)"
+
+[main 3bdc723] ci: add nightly update workflow (push to data-updates)
+ 1 file changed, 65 insertions(+)
+ create mode 100644 .github/workflows/nightly-update-data.yml
+giulio@Mac ArbiSense % git push origin HEAD:data-updates
+
+Username for 'https://github.com': sandronigiulio-eng
+Password for 'https://sandronigiulio-eng@github.com': 
+Enumerazione degli oggetti in corso: 17, fatto.
+Conteggio degli oggetti in corso: 100% (17/17), fatto.
+Compressione delta in corso, uso fino a 10 thread
+Compressione oggetti in corso: 100% (11/11), fatto.
+Scrittura degli oggetti in corso: 100% (14/14), 5.16 KiB | 5.17 MiB/s, fatto.
+Total 14 (delta 4), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (4/4), completed with 2 local objects.
+To https://github.com/sandronigiulio-eng/ArbiSense.git
+ ! [remote rejected] HEAD -> data-updates (refusing to allow a Personal Access Token to create or update workflow `.github/workflows/nightly-update-data.yml` without `workflow` scope)
+error: push di alcuni riferimenti su 'https://github.com/sandronigiulio-eng/ArbiSense.git' non riuscito
+giulio@Mac ArbiSense % git push origin HEAD:data-updates
+
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Autenticazione non riuscita per 'https://github.com/sandronigiulio-eng/ArbiSense.git/'
+giulio@Mac ArbiSense % git push origin HEAD:data-updates
+
+Username for 'https://github.com': sandronigiulio-eng
+Password for 'https://sandronigiulio-eng@github.com': 
+Enumerazione degli oggetti in corso: 17, fatto.
+Conteggio degli oggetti in corso: 100% (17/17), fatto.
+Compressione delta in corso, uso fino a 10 thread
+Compressione oggetti in corso: 100% (11/11), fatto.
+Scrittura degli oggetti in corso: 100% (14/14), 5.16 KiB | 5.17 MiB/s, fatto.
+Total 14 (delta 4), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (4/4), completed with 2 local objects.
+remote: 
+remote: Create a pull request for 'data-updates' on GitHub by visiting:
+remote:      https://github.com/sandronigiulio-eng/ArbiSense/pull/new/data-updates
+remote: 
+To https://github.com/sandronigiulio-eng/ArbiSense.git
+ * [new branch]      HEAD -> data-updates
+giulio@Mac ArbiSense % git fetch origin
+git branch -r | grep data-updates || true
+
+  origin/data-updates
+giulio@Mac ArbiSense % # vai nella cartella del progetto
+cd ~/Documents/ArbiSense
+
+# verifica dove sei
+pwd
+
+# vedi i file nella root (dovresti vedere cartelle come scripts, data_sample, .github, config, reports)
+ls -la
+
+zsh: command not found: #
+zsh: command not found: #
+/Users/giulio/Documents/ArbiSense
+zsh: number expected
+total 520
+drwxr-xr-x@ 18 giulio  staff     576 25 Ott 17:38 .
+drwx------+ 29 giulio  staff     928 23 Ott 18:35 ..
+-rw-r--r--@  1 giulio  staff    6148  6 Ott 12:26 .DS_Store
+drwxr-xr-x  14 giulio  staff     448 25 Ott 17:38 .git
+drwxr-xr-x   3 giulio  staff      96 25 Ott 17:38 .github
+-rw-r--r--   1 giulio  staff      62 10 Ott 17:02 .gitignore
+-rw-r--r--   1 giulio  staff    1327  7 Ott 15:27 app.py
+-rw-r--r--   1 giulio  staff  226721 12 Ott 20:45 changes_uncommitted.patch
+drwxr-xr-x   4 giulio  staff     128 10 Ott 19:06 config
+drwxr-xr-x  19 giulio  staff     608 10 Ott 18:49 data_sample
+-rw-r--r--   1 giulio  staff     391  2 Ott 20:39 README.md
+drwxr-xr-x   9 giulio  staff     288  7 Ott 14:45 reports
+-rw-r--r--   1 giulio  staff      39  7 Ott 16:18 requirements.txt
+-rw-r--r--   1 giulio  staff     628 12 Ott 20:45 save_git_status_long.txt
+-rw-r--r--   1 giulio  staff     567 12 Ott 20:45 save_git_status.txt
+-rw-r--r--   1 giulio  staff     428 12 Ott 20:45 save_modified_files.txt
+drwxr-xr-x  16 giulio  staff     512 10 Ott 18:51 scripts
+drwxr-xr-x   8 giulio  staff     256  7 Ott 15:19 venv
+giulio@Mac ArbiSense % # dalla root del repo (dopo cd ~/Documents/ArbiSense)
+open .
+
+zsh: number expected
+giulio@Mac ArbiSense % cd ~/Documents/ArbiSense
+code .
+
+zsh: command not found: code
+giulio@Mac ArbiSense % cd ~/Documents/ArbiSense
+open .
+
+giulio@Mac ArbiSense % cd ~/Documents/ArbiSense
+cat > scripts/send_alerts.py <<'PY'
+# (qui incolla tutto lo script Python che ti ho dato)
+PY
+
+giulio@Mac ArbiSense % cd ~/Documents/ArbiSense
+
+giulio@Mac ArbiSense % code scripts/send_alerts.py
+
+zsh: command not found: code
+giulio@Mac ArbiSense % open -a TextEdit scripts/send_alerts.py
+
+giulio@Mac ArbiSense % git add scripts/send_alerts.py
+git commit -m "feat: add Telegram alerts script"
+git push origin HEAD:data-updates
+
+[main 36811cb] feat: add Telegram alerts script
+ 1 file changed, 49 insertions(+), 53 deletions(-)
+Enumerazione degli oggetti in corso: 7, fatto.
+Conteggio degli oggetti in corso: 100% (7/7), fatto.
+Compressione delta in corso, uso fino a 10 thread
+Compressione oggetti in corso: 100% (4/4), fatto.
+Scrittura degli oggetti in corso: 100% (4/4), 1.06 KiB | 1.06 MiB/s, fatto.
+Total 4 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/sandronigiulio-eng/ArbiSense.git
+   3bdc723..36811cb  HEAD -> data-updates
+giulio@Mac ArbiSense % git fetch origin
+git checkout main
+git pull
+git merge origin/data-updates --no-ff -m "Merge nightly workflow from data-updates"
+git push origin main
+
+M	.gitignore
+M	data_sample/CSP1_L.csv
+M	data_sample/EUNL_DE.csv
+M	data_sample/IUSA_DE.csv
+D	data_sample/IWRD_DE.csv
+M	data_sample/SWDA_L.csv
+M	data_sample/VEVE_AS.csv
+M	data_sample/VWRL_L.csv
+M	data_sample/spread_report_CSP1_L_IUSA_DE.csv
+M	data_sample/spread_report_SWDA_L_EUNL_DE.csv
+M	data_sample/spread_report_VWRL_L_VEVE_AS.csv
+M	data_sample/spread_report_all_pairs.xlsx
+M	data_sample/spread_report_all_pairs_long.csv
+M	data_sample/spread_report_all_pairs_wide.csv
+M	reports/spread_plot_CSP1_L_IUSA_DE.png
+M	reports/spread_plot_SWDA_L_EUNL_DE.png
+M	reports/spread_plot_VWRL_L_VEVE_AS.png
+M	reports/spread_summary.json
+Si è già su 'main'
+Il tuo branch è avanti rispetto a 'origin/main' di 4 commit.
+  (usa "git push" per pubblicare i tuoi commit locali)
+Già aggiornato.
+Già aggiornato.
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To https://github.com/sandronigiulio-eng/ArbiSense.git
+   fbcbfc4..36811cb  main -> main
+giulio@Mac ArbiSense % cd ~/Documents/ArbiSense
+
+# Aggiungi matplotlib se non è già nel requirements
+grep -q "^matplotlib" requirements.txt || echo "matplotlib" >> requirements.txt
+
+# (Consigliato) assicurati che tutte le dipendenze base ci siano
+for p in pandas numpy yfinance plotly streamlit requests; do
+  grep -q "^$p" requirements.txt || echo "$p" >> requirements.txt
+done
+
+# Se in qualche script scrivi/leggi .xlsx, aggiungi un writer/reader
+grep -q "^openpyxl" requirements.txt || echo "openpyxl" >> requirements.txt
+# opzionale: writer alternativo
+# grep -q "^XlsxWriter" requirements.txt || echo "XlsxWriter" >> requirements.txt
+
+zsh: command not found: #
+zsh: unknown file attribute: C
+zsh: command not found: #
+zsh: command not found: #
+zsh: command not found: #
+giulio@Mac ArbiSense % cd ~/Documents/ArbiSense
+
+grep -q "^matplotlib" requirements.txt || echo "matplotlib" >> requirements.txt
+for p in pandas numpy yfinance plotly streamlit requests; do
+  grep -q "^$p" requirements.txt || echo "$p" >> requirements.txt
+done
+grep -q "^openpyxl" requirements.txt || echo "openpyxl" >> requirements.txt
+
+giulio@Mac ArbiSense % nano scripts/run_mvp.py
+
+
+  UW PICO 5.09                           File: scripts/run_mvp.py                           Modified  
+
+            # Save series as CSV (date index preserved)
+            series.to_csv(out_path, header=True)
+            logging.info("Saved %s (rows=%d)", out_path, len(series))
+            return True
+        except Exception as e:
+            logging.error("Failed to save %s: %s", out_path, e)
+            return False
+        
+    return False
+    
+# --- Compute spread ---
+def compute_spread(file_a: Path, file_b: Path) -> pd.DataFrame:
+    """
+    Legge due CSV (index date), allinea le date e calcola spread_pct = (price_a / price_b - 1) * 100.
+    Ritorna DataFrame con colonne: price_a, price_b, spread_pct
+    """
+    df_a = pd.read_csv(file_a, index_col=0, parse_dates=True)
+    df_b = pd.read_csv(file_b, index_col=0, parse_dates=True)
+    
+    # Convert to Series (if DataFrame)
+    if isinstance(df_a, pd.DataFrame):
+        if "Close" in df_a.columns:
+            s_a = df_a["Close"]
+        else:
+            s_a = df_a.iloc[:, 0]
+    else:
+        s_a = df_a.squeeze()
+       
+    if isinstance(df_b, pd.DataFrame):
+        if "Close" in df_b.columns:
+            s_b = df_b["Close"]
+        else:
+            s_b = df_b.iloc[:, 0]
+    else:
+        s_b = df_b.squeeze()
+    
+    # align on intersection of dates
+    df = pd.concat([s_a.rename("price_a"), s_b.rename("price_b")], axis=1, join="inner").dropna()
+    
+    if df.empty:
+        return df
+        
+    # Calculate spread_pct as percentage
+    df["spread_pct"] = (df["price_a"] / df["price_b"] - 1.0) * 100.0
+        
+    # Make sure index name is Date for readability
+    df.index.name = "Date"
+    return df
+        
+# --- Save report and plot ---
+def save_report_and_plot(df_spread: pd.DataFrame, pair_name: str) -> None:
+    """
+
+^G Get Help      ^O WriteOut      ^R Read File     ^Y Prev Pg       ^K Cut Text      ^C Cur Pos       
+^X Exit          ^J Justify       ^W Where is      ^V Next Pg       ^U UnCut Text    ^T To Spell     

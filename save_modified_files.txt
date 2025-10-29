@@ -1,0 +1,14 @@
+.gitignore
+data_sample/CSP1_L.csv
+data_sample/EUNL_DE.csv
+data_sample/IUSA_DE.csv
+data_sample/IWRD_DE.csv
+data_sample/SWDA_L.csv
+data_sample/VEVE_AS.csv
+data_sample/VWRL_L.csv
+data_sample/spread_report_CSP1_L_IUSA_DE.csv
+data_sample/spread_report_SWDA_L_EUNL_DE.csv
+data_sample/spread_report_VWRL_L_VEVE_AS.csv
+reports/spread_plot_CSP1_L_IUSA_DE.png
+reports/spread_plot_SWDA_L_EUNL_DE.png
+reports/spread_plot_VWRL_L_VEVE_AS.png

@@ -1,0 +1,20 @@
+[
+  {
+    "pair": "SWDA_L_EUNL_DE",
+    "created": "2025-10-28T00:22:50",
+    "folds_active": 10,
+    "oos_total_pnl": 20193.479177678135,
+    "params": {
+      "pair": "SWDA_L_EUNL_DE",
+      "z_enter": 2.0,
+      "z_exit": 1.4,
+      "z_stop": 99.0,
+      "max_hold": 5,
+      "latency": 1,
+      "z_window": 40,
+      "side": "short",
+      "notional": 250000.0,
+      "spread_scale": "auto"
+    }
+  }
+]

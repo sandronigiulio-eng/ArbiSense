@@ -7,3 +7,4 @@ matplotlib
 requests
 openpyxl
 XlsxWriter
+statsmodels>=0.14

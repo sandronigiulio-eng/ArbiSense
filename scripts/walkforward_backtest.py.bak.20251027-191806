@@ -1,0 +1,234 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+ArbiSense — Walk-Forward Backtest (train -> selezione parametri -> test OOS)
+
+Per ogni fold:
+  1) Grid search sul TRAIN (Sharpe DESC -> PnL DESC -> |MaxDD| ASC)
+  2) Applica i parametri migliori al TEST adiacente
+  3) Colleziona trades e metriche OOS
+
+Output:
+  reports/wf_best_params.csv   (parametri scelti per fold)
+  reports/wf_metrics.csv       (metriche OOS per fold)
+  reports/wf_trades.csv        (tutti i trade OOS concatenati)
+  reports/wf_equity.png        (equity OOS cumulata)
+"""
+
+import os, sys, json, subprocess, datetime as dt
+from pathlib import Path
+import pandas as pd
+import numpy as np
+
+BASE_DIR = Path(__file__).parent.parent
+BACKTEST = BASE_DIR / "scripts" / "backtest_signals.py"
+REPORTS  = BASE_DIR / "reports"
+WF_PARAMS_CSV = REPORTS / "wf_best_params.csv"
+WF_METRICS_CSV = REPORTS / "wf_metrics.csv"
+WF_TRADES_CSV = REPORTS / "wf_trades.csv"
+WF_EQUITY_PNG = REPORTS / "wf_equity.png"
+METRICS_TMP = REPORTS / "backtest_metrics.csv"
+TRADES_TMP  = REPORTS / "backtest_trades.csv"
+
+def run_bt(args_dict):
+    """Esegue backtest_signals.py con i parametri di args_dict; ritorna dict metrics."""
+    cmd = ["python3", str(BACKTEST)]
+    for k, v in args_dict.items():
+        if v is None or v == "":
+            continue
+        kflag = f"--{k.replace('_','-')}"
+        if isinstance(v, bool):
+            if v:
+                cmd.append(kflag)
+        else:
+            cmd += [kflag, str(v)]
+    out = subprocess.run(cmd, capture_output=True, text=True)
+    if out.returncode != 0:
+        raise RuntimeError(out.stderr or out.stdout)
+    if not METRICS_TMP.exists():
+        raise RuntimeError("Metrics non trovate (manca reports/backtest_metrics.csv)")
+    m = pd.read_csv(METRICS_TMP).iloc[0].to_dict()
+    return m
+
+def parse_args():
+    import argparse
+    ap = argparse.ArgumentParser("ArbiSense Walk-Forward")
+    ap.add_argument("--pairs-file", default=str(REPORTS / "selected_pairs.csv"))
+    ap.add_argument("--side", choices=["both","long","short"], default="long")
+    ap.add_argument("--start", default="2023-12-01")
+    ap.add_argument("--end",   default="2025-10-31")
+    ap.add_argument("--train-days", type=int, default=180)
+    ap.add_argument("--test-days",  type=int, default=60)
+    ap.add_argument("--step-days",  type=int, default=60, help="quanto far scorrere la finestra")
+    ap.add_argument("--notional", type=float, default=250000)
+    ap.add_argument("--fee-bps", type=float, default=1.0)
+    ap.add_argument("--slippage-bps", type=float, default=1.0)
+    ap.add_argument("--z-window", type=int, default=60)
+    ap.add_argument("--spread-scale", default="auto")
+    # griglia parametri (ampliata)
+    ap.add_argument("--grid-z-enter", default="1.8,2.0,2.2,2.5,3.0")
+    ap.add_argument("--grid-z-exit",  default="0.6,0.8,1.0,1.2")
+    ap.add_argument("--grid-z-stop",  default="3.5,4.0,99")
+    ap.add_argument("--grid-max-hold", default="3,5,10")
+    ap.add_argument("--latency-days", default="2")
+    return ap.parse_args()
+
+def main():
+    args = parse_args()
+    REPORTS.mkdir(parents=True, exist_ok=True)
+
+    zE = [float(x) for x in str(args.grid_z_enter).split(",") if x]
+    zX = [float(x) for x in str(args.grid_z_exit ).split(",") if x]
+    zS = [float(x) for x in str(args.grid_z_stop ).split(",") if x]
+    MH = [int(x)   for x in str(args.grid_max_hold).split(",") if x]
+    LAT= [int(x)   for x in str(args.latency_days ).split(",") if x]
+
+    # costruisci folds
+    t0 = dt.datetime.strptime(args.start, "%Y-%m-%d")
+    t1 = dt.datetime.strptime(args.end,   "%Y-%m-%d")
+    folds = []
+    train_st = t0
+    while True:
+        train_en = train_st + dt.timedelta(days=args.train_days-1)
+        test_en  = train_en + dt.timedelta(days=args.test_days)
+        if test_en > t1:
+            break
+        folds.append((
+            train_st.strftime("%Y-%m-%d"),
+            train_en.strftime("%Y-%m-%d"),
+            (train_en + dt.timedelta(days=1)).strftime("%Y-%m-%d"),
+            test_en.strftime("%Y-%m-%d"),
+        ))
+        train_st = train_st + dt.timedelta(days=args.step_days)
+
+    if not folds:
+        print("[ERROR] Nessun fold costruito — controlla date e finestre.", file=sys.stderr)
+        sys.exit(1)
+
+    best_rows = []
+    test_metrics = []
+    all_trades = []
+
+    for idx, (trS, trE, teS, teE) in enumerate(folds, start=1):
+        print(f"\n=== FOLD {idx} ===")
+        print(f"TRAIN: {trS} → {trE}  |  TEST: {teS} → {teE}")
+
+        # GRID SEARCH sul TRAIN
+        candidates = []
+        for ze in zE:
+            for zx in zX:
+                for zs in zS:
+                    for mh in MH:
+                        for lat in LAT:
+                            params = dict(
+                                pairs_file=args.pairs_file, side=args.side,
+                                z_enter=ze, z_exit=zx, z_stop=zs,
+                                max_hold=mh, latency_days=lat,
+                                fee_bps=args.fee_bps, slippage_bps=args.slippage_bps,
+                                notional=args.notional, z_window=args.z_window,
+                                spread_scale=args.spread_scale,
+                                start=trS, end=trE
+                            )
+                            try:
+                                m = run_bt(params)
+                                # per robustezza: assicurati che le chiavi esistano
+                                m.setdefault("Sharpe", 0.0)
+                                m.setdefault("net_pnl_total", 0.0)
+                                m.setdefault("MaxDD", 0.0)
+                                m.update(params)
+                                candidates.append(m)
+                                print(f"  train zE={ze} zX={zx} zS={zs} H={mh} L={lat}  -> Sharpe={m['Sharpe']:.3f} PnL={m['net_pnl_total']:.0f}")
+                            except Exception as e:
+                                print(f"  [skip] {e}")
+
+        if not candidates:
+            print("[WARN] nessun candidato valido su TRAIN; salto fold")
+            continue
+
+        cand_df = pd.DataFrame(candidates)
+
+        # Ranking per colonne (niente tuple!)
+        cand_df["_rank_sharpe"] = pd.to_numeric(cand_df["Sharpe"], errors="coerce").fillna(0.0)
+        cand_df["_rank_pnl"]    = pd.to_numeric(cand_df["net_pnl_total"], errors="coerce").fillna(-1e18)
+        cand_df["_rank_dd"]     = pd.to_numeric(cand_df["MaxDD"], errors="coerce").abs().fillna(1e9)
+
+        cand_df = cand_df.sort_values(
+            by=["_rank_sharpe","_rank_pnl","_rank_dd"],
+            ascending=[False, False, True]
+        )
+
+        best = cand_df.iloc[0].to_dict()
+        best_pick = {
+            "z_enter": best["z_enter"],
+            "z_exit": best["z_exit"],
+            "z_stop": best["z_stop"],
+            "max_hold": int(best["max_hold"]),
+            "latency_days": int(best["latency_days"]),
+        }
+        print(f"BEST TRAIN → {best_pick}  (Sharpe={best['Sharpe']:.3f}, PnL={best['net_pnl_total']:.0f})")
+
+        brow = dict(
+            fold=idx,
+            train_start=trS, train_end=trE,
+            test_start=teS, test_end=teE,
+            **best_pick
+        )
+        best_rows.append(brow)
+
+        # TEST con i parametri scelti
+        test_params = dict(
+            pairs_file=args.pairs_file, side=args.side,
+            start=teS, end=teE,
+            fee_bps=args.fee_bps, slippage_bps=args.slippage_bps,
+            notional=args.notional, z_window=args.z_window, spread_scale=args.spread_scale,
+            z_enter=best_pick["z_enter"], z_exit=best_pick["z_exit"],
+            z_stop=best_pick["z_stop"], max_hold=best_pick["max_hold"], latency_days=best_pick["latency_days"]
+        )
+        try:
+            mtest = run_bt(test_params)
+            mtest["fold"] = idx
+            mtest["test_start"] = teS
+            mtest["test_end"]   = teE
+            test_metrics.append(mtest)
+
+            if TRADES_TMP.exists():
+                dft = pd.read_csv(TRADES_TMP)
+                dft["fold"] = idx
+                all_trades.append(dft.copy())
+        except Exception as e:
+            print(f"[WARN] test fold {idx} fallito: {e}")
+
+    # Scrivi output
+    pd.DataFrame(best_rows).to_csv(WF_PARAMS_CSV, index=False)
+
+    if test_metrics:
+        pd.DataFrame(test_metrics).to_csv(WF_METRICS_CSV, index=False)
+
+    if all_trades:
+        pd.concat(all_trades, ignore_index=True).to_csv(WF_TRADES_CSV, index=False)
+
+    # Equity OOS
+    if all_trades:
+        trades = pd.concat(all_trades, ignore_index=True)
+        trades["exit_date"] = pd.to_datetime(trades["exit_date"])
+        daily = trades.groupby("exit_date")["net_pnl"].sum().sort_index()
+        eq = daily.cumsum()
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(10,5))
+        eq.plot()
+        plt.title("ArbiSense — Walk-Forward Equity (OOS)")
+        plt.xlabel("Date"); plt.ylabel("Equity (net PnL cum.)")
+        plt.tight_layout(); plt.savefig(WF_EQUITY_PNG, dpi=150); plt.close()
+
+    print("\n[WROTE]", WF_PARAMS_CSV)
+    print("[WROTE]", WF_METRICS_CSV if WF_METRICS_CSV.exists() else "(no metrics)")
+    print("[WROTE]", WF_TRADES_CSV  if WF_TRADES_CSV.exists()  else "(no trades)")
+    print("[WROTE]", WF_EQUITY_PNG  if WF_EQUITY_PNG.exists()  else "(no equity plot)")
+    print("\nDone.")
+
+if __name__ == "__main__":
+    main()
+

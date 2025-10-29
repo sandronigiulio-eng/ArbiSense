@@ -1,0 +1,1 @@
+{"params": {"z_enter": 2.0, "z_exit": 2.0, "z_stop": 3.6, "max_hold": 7.0, "latency": 0.0, "spread_scale": 0.0001, "notional": 250000.0, "z_window": 40.0, "sign": -1.0, "pair": "SWDA_L_EUNL_DE", "side": "short"}}

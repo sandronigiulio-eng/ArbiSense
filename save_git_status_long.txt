@@ -1,0 +1,19 @@
+## main...origin/main [avanti 2]
+ M .gitignore
+ M data_sample/CSP1_L.csv
+ M data_sample/EUNL_DE.csv
+ M data_sample/IUSA_DE.csv
+ D data_sample/IWRD_DE.csv
+ M data_sample/SWDA_L.csv
+ M data_sample/VEVE_AS.csv
+ M data_sample/VWRL_L.csv
+ M data_sample/spread_report_CSP1_L_IUSA_DE.csv
+ M data_sample/spread_report_SWDA_L_EUNL_DE.csv
+ M data_sample/spread_report_VWRL_L_VEVE_AS.csv
+ M reports/spread_plot_CSP1_L_IUSA_DE.png
+ M reports/spread_plot_SWDA_L_EUNL_DE.png
+ M reports/spread_plot_VWRL_L_VEVE_AS.png
+?? data_sample/spread_report_SWDA_L_IWRD_DE.csv
+?? save_git_status.txt
+?? save_git_status_long.txt
+?? scripts/run_mvp.py.bak

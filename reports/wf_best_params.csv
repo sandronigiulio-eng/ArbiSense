@@ -1,8 +1,2 @@
-pair,fold,z_enter,z_exit,z_stop,max_hold,latency,notional,start,end,train_days,test_days,step_days,spread_scale,side,sign,z_window
-SWDA_L_EUNL_DE,5,2.2,2.0,3.6,7,0,250000.0,2023-06-30,2024-04-24,240,60,45,0.0001,short,-1,40
-SWDA_L_EUNL_DE,7,2.2,2.0,3.6,7,0,250000.0,2023-09-28,2024-07-23,240,60,45,0.0001,short,-1,40
-SWDA_L_EUNL_DE,9,2.0,2.0,3.6,7,0,250000.0,2023-12-27,2024-10-21,240,60,45,0.0001,short,-1,40
-SWDA_L_EUNL_DE,10,2.0,2.0,3.6,7,0,250000.0,2024-02-10,2024-12-05,240,60,45,0.0001,short,-1,40
-SWDA_L_EUNL_DE,11,2.0,2.0,3.6,7,0,250000.0,2024-03-26,2025-01-19,240,60,45,0.0001,short,-1,40
-SWDA_L_EUNL_DE,15,2.6,2.0,3.6,7,0,250000.0,2024-09-22,2025-07-18,240,60,45,0.0001,short,1,40
-SWDA_L_EUNL_DE,17,2.6,2.0,3.6,7,0,250000.0,2024-12-21,2025-10-16,240,60,45,0.0001,short,1,40
+pair,z_enter,z_exit,z_stop,max_hold,latency,z_window,side,notional,spread_scale,sign,oos_total_pnl
+SWDA_L_EUNL_DE,2.0,1.4,99.0,5,1,40,short,250000.0,auto,1,6168.7506012771355

@@ -1,0 +1,299 @@
+#!/usr/bin/env python3
+"""
+ArbiSense — backtest_signals.py (durable fix)
+Compatibile con: --pairs, --pairs-file, --side {short,long,both},
+--z-enter/--z-exit/--z-stop, --latency-days, --max-hold, --fee/slippage bps,
+--notional, --start/--end, --z-window, --spread-scale (auto|float).
+
+Output:
+  reports/backtest_trades.csv
+  reports/backtest_metrics.csv
+  reports/backtest_equity.png
+
+PnL: segno corretto.
+SHORT_SPREAD guadagna se exit_spread < entry_spread.
+LONG_SPREAD guadagna se exit_spread > entry_spread.
+"""
+from __future__ import annotations
+import argparse, os, sys, math
+from datetime import datetime
+from typing import List, Tuple
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+# ------------------ argparse ------------------
+
+def parse_args():
+    ap = argparse.ArgumentParser("ArbiSense Backtest (single run)")
+    ap.add_argument("--input", default="data_sample/spread_report_all_pairs_long.csv",
+                    help="CSV input (long). Richieste colonne: pair, date/timestamp e spread|spread_raw|spread_pct")
+    ap.add_argument("--pairs", default=None,
+                    help="Lista coppie separate da virgola (es. SWDA_L_EUNL_DE,VWRL_L_VEVE_AS)")
+    ap.add_argument("--pairs-file", default=None,
+                    help="CSV con colonna 'pair' per le coppie da includere")
+    ap.add_argument("--side", choices=["short","long","both"], default="short")
+    ap.add_argument("--z-enter", type=float, default=3.0)
+    ap.add_argument("--z-exit", type=float, default=2.0)
+    ap.add_argument("--z-stop", type=float, default=99.0)
+    ap.add_argument("--latency-days", type=int, default=0)
+    ap.add_argument("--max-hold", type=int, default=5)
+    ap.add_argument("--fee-bps", type=float, default=0.0)
+    ap.add_argument("--slippage-bps", type=float, default=0.0)
+    ap.add_argument("--notional", type=float, default=250000.0)
+    ap.add_argument("--start", default=None, help="YYYY-MM-DD inclusiva")
+    ap.add_argument("--end", default=None, help="YYYY-MM-DD inclusiva")
+    ap.add_argument("--z-window", type=int, default=60)
+    ap.add_argument("--spread-scale", default="auto", help="auto oppure numero (fattore)")
+    ap.add_argument("--outdir", default="reports")
+    return ap.parse_args()
+
+# ------------------ utils ------------------
+
+def ensure_dir(p: str):
+    os.makedirs(p, exist_ok=True)
+
+
+def infer_date_col(df: pd.DataFrame) -> str:
+    for c in ["date","timestamp","Date","Datetime"]:
+        if c in df.columns:
+            return c
+    # fallback euristico
+    for c in df.columns:
+        try:
+            pd.to_datetime(df[c])
+            return c
+        except Exception:
+            pass
+    raise KeyError("Nessuna colonna data/timestamp trovata")
+
+
+def pick_spread_col(df: pd.DataFrame) -> Tuple[str, bool]:
+    cols = set(df.columns)
+    if "spread_raw" in cols:
+        return "spread_raw", False
+    if "spread" in cols:
+        return "spread", False
+    if "spread_pct" in cols:
+        return "spread_pct", True
+    raise KeyError("Servono colonne spread_raw|spread|spread_pct")
+
+
+def zscore(s: pd.Series, win: int) -> pd.Series:
+    m = s.rolling(win, min_periods=max(5, win//4)).mean()
+    v = s.rolling(win, min_periods=max(5, win//4)).std(ddof=0)
+    return (s - m) / v
+
+
+def dir_sign(direction: str) -> float:
+    if direction == "SHORT_SPREAD":
+        return -1.0
+    if direction == "LONG_SPREAD":
+        return +1.0
+    raise ValueError(f"Direzione sconosciuta: {direction}")
+
+
+def compute_pnl(direction: str, entry_spread: float, exit_spread: float, *,
+                 is_pct: bool, spread_scale: float, notional: float,
+                 fee_bps: float, slippage_bps: float) -> Tuple[float,float,float]:
+    delta = exit_spread - entry_spread
+    gross = dir_sign(direction) * delta * (notional if is_pct else (spread_scale * notional))
+    costs = (fee_bps + slippage_bps) * 1e-4 * notional
+    net = gross - costs
+    return gross, costs, net
+
+# ------------------ core ------------------
+
+def backtest_pair(df: pd.DataFrame, pair: str, args) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    date_col = infer_date_col(df)
+    df = df.sort_values(date_col).reset_index(drop=True)
+
+    # range date
+    if args.start:
+        df = df[pd.to_datetime(df[date_col]) >= pd.to_datetime(args.start)]
+    if args.end:
+        df = df[pd.to_datetime(df[date_col]) <= pd.to_datetime(args.end)]
+    if df.empty:
+        return pd.DataFrame(), pd.DataFrame([{ "pair": pair, "trades": 0, "net_pnl_total": 0.0, "Sharpe": 0.0, "hit_rate": 0.0, "start": args.start, "end": args.end }])
+
+    spread_col, is_pct = pick_spread_col(df)
+
+    # scala spread
+    if args.spread_scale == "auto":
+        lvl = df[spread_col].abs().median()
+        spread_scale = (lvl if lvl and not math.isnan(lvl) else 1.0) * 1e-4
+        if is_pct:
+            spread_scale = 1.0
+    else:
+        spread_scale = float(args.spread_scale)
+
+    # z e latency
+    z = zscore(df[spread_col].astype(float), args.z_window)
+    z_lag = z.shift(args.latency_days) if args.latency_days > 0 else z
+    s_lag = df[spread_col].shift(args.latency_days) if args.latency_days > 0 else df[spread_col]
+
+    in_pos = False
+    direction = None
+    entry_i = None
+
+    rows = []
+
+    def try_open(i):
+        nonlocal in_pos, direction, entry_i
+        zi = z_lag.iat[i]
+        if np.isnan(zi):
+            return
+        if not in_pos and args.side in ("short","both") and zi >= args.z_enter:
+            in_pos, direction, entry_i = True, "SHORT_SPREAD", i
+        elif not in_pos and args.side in ("long","both") and zi <= -args.z_enter:
+            in_pos, direction, entry_i = True, "LONG_SPREAD", i
+
+    def must_exit(i) -> Tuple[bool,str]:
+        if not in_pos:
+            return False, ""
+        zi = z_lag.iat[i]
+        if np.isnan(zi):
+            return False, ""
+        # mean-revert
+        if direction == "SHORT_SPREAD" and zi <= args.z_exit:
+            return True, "MEAN_REVERT"
+        if direction == "LONG_SPREAD" and zi >= -args.z_exit:
+            return True, "MEAN_REVERT"
+        # stop
+        if direction == "SHORT_SPREAD" and zi >= args.z_stop:
+            return True, "STOP"
+        if direction == "LONG_SPREAD" and zi <= -args.z_stop:
+            return True, "STOP"
+        # timeout
+        if entry_i is not None and (i - entry_i) >= args.max_hold:
+            return True, "TIMEOUT"
+        return False, ""
+
+    n = len(df)
+    for i in range(n):
+        if not in_pos:
+            try_open(i)
+        if in_pos:
+            exit_now, reason = must_exit(i)
+            if exit_now:
+                ent = df.iloc[entry_i]
+                exi = df.iloc[i]
+                entry_spread = float(s_lag.iloc[entry_i]) if not is_pct else float(df[spread_col].iloc[entry_i])
+                exit_spread  = float(s_lag.iloc[i])      if not is_pct else float(df[spread_col].iloc[i])
+                gross, cost, net = compute_pnl(direction, entry_spread, exit_spread,
+                                               is_pct=is_pct, spread_scale=spread_scale,
+                                               notional=args.notional, fee_bps=args.fee_bps,
+                                               slippage_bps=args.slippage_bps)
+                rows.append({
+                    "pair": pair,
+                    "entry_date": pd.to_datetime(ent[date_col]).date(),
+                    "exit_date":  pd.to_datetime(exi[date_col]).date(),
+                    "entry_spread_raw": float(df[spread_col].iloc[entry_i]) if not is_pct else np.nan,
+                    "exit_spread_raw":  float(df[spread_col].iloc[i])      if not is_pct else np.nan,
+                    "entry_spread_eff": float(entry_spread),
+                    "exit_spread_eff":  float(exit_spread),
+                    "direction": direction,
+                    "days_held": int(i - entry_i),
+                    "gross_pnl": float(gross),
+                    "cost": float(cost),
+                    "net_pnl": float(net),
+                    "entry_z": float(z_lag.iloc[entry_i]),
+                    "exit_z":  float(z_lag.iloc[i]),
+                    "reason_exit": reason,
+                    "spread_scale": float(spread_scale),
+                })
+                in_pos, direction, entry_i = False, None, None
+
+    trades = pd.DataFrame(rows)
+
+    if trades.empty:
+        metrics = pd.DataFrame([{ "pair": pair, "start": args.start, "end": args.end,
+                                  "trades": 0, "net_pnl_total": 0.0,
+                                  "CAGR": 0.0, "vol_annualized": 0.0,
+                                  "Sharpe": 0.0, "MaxDD": 0.0, "hit_rate": 0.0 }])
+    else:
+        eq = trades["net_pnl"].cumsum()
+        ret = trades["net_pnl"]
+        vol_ann = ret.std(ddof=0) * np.sqrt(252/max(1,args.max_hold)) if len(ret) > 1 else 0.0
+        sharpe = (ret.mean()/ret.std(ddof=0)) * np.sqrt(252/max(1,args.max_hold)) if ret.std(ddof=0)>0 else 0.0
+        roll_max = eq.cummax(); dd = (eq - roll_max); maxdd = float(dd.min() if len(dd) else 0.0)
+        hit = float((trades["net_pnl"] > 0).mean())
+        # durata backtest effettiva
+        start_eff = trades["entry_date"].min(); end_eff = trades["exit_date"].max()
+        metrics = pd.DataFrame([{ "pair": pair, "start": str(start_eff), "end": str(end_eff),
+                                  "trades": len(trades), "net_pnl_total": float(trades["net_pnl"].sum()),
+                                  "CAGR": 0.0, "vol_annualized": float(vol_ann),
+                                  "Sharpe": float(sharpe), "MaxDD": maxdd, "hit_rate": hit }])
+
+    return trades, metrics
+
+# ------------------ main ------------------
+
+def main():
+    args = parse_args()
+    ensure_dir(args.outdir)
+
+    df = pd.read_csv(args.input)
+
+    # filtra le coppie richieste
+    pairs: List[str] = []
+    if args.pairs_file and os.path.exists(args.pairs_file):
+        pf = pd.read_csv(args.pairs_file)
+        if "pair" not in pf.columns:
+            sys.exit("pairs-file: manca colonna 'pair'")
+        pairs = [str(x) for x in pf["pair"].dropna().unique().tolist()]
+    if args.pairs:
+        pairs += [p.strip() for p in str(args.pairs).split(",") if p.strip()]
+    pairs = list(dict.fromkeys(pairs))  # dedup
+
+    date_col = infer_date_col(df)
+    df[date_col] = pd.to_datetime(df[date_col])
+
+    if pairs:
+        df = df[df["pair"].isin(pairs)].copy()
+        if df.empty:
+            sys.exit("Nessuna riga per le coppie richieste")
+
+    trades_all = []
+    metrics_all = []
+
+    if "pair" in df.columns:
+        for pair, g in df.groupby("pair"):
+            t, m = backtest_pair(g.copy(), pair, args)
+            if not t.empty:
+                trades_all.append(t)
+            metrics_all.append(m)
+    else:
+        t, m = backtest_pair(df.copy(), "UNKNOWN", args)
+        if not t.empty:
+            trades_all.append(t)
+        metrics_all.append(m)
+
+    trades_all = pd.concat(trades_all, ignore_index=True) if trades_all else pd.DataFrame(columns=["pair","net_pnl"])
+    metrics_all = pd.concat(metrics_all, ignore_index=True) if metrics_all else pd.DataFrame()
+
+    # salva
+    trades_path  = os.path.join(args.outdir, "backtest_trades.csv")
+    metrics_path = os.path.join(args.outdir, "backtest_metrics.csv")
+    equity_path  = os.path.join(args.outdir, "backtest_equity.png")
+
+    trades_all.to_csv(trades_path, index=False)
+    metrics_all.to_csv(metrics_path, index=False)
+
+    # equity
+    plt.figure(figsize=(9,4))
+    if not trades_all.empty:
+        plt.plot(trades_all["net_pnl"].cumsum().values)
+    plt.title("ArbiSense — Backtest Equity")
+    plt.xlabel("Trade #")
+    plt.ylabel("PnL cum")
+    plt.tight_layout()
+    plt.savefig(equity_path, dpi=120)
+
+    print(f"[WROTE] {metrics_path}\n[WROTE] {trades_path}\n[WROTE] {equity_path}")
+
+if __name__ == "__main__":
+    main()
+
