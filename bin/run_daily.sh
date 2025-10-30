@@ -1,50 +1,39 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(dirname "$0")/.."
 
-REPO="/Users/giulio/ArbiSense"
-cd "$REPO"
+# venv + variabili
+[ -d "venv" ] && source venv/bin/activate
+source .env 2>/dev/null || true
 
-# Esporta variabili da .env (se presente)
-if [ -f .env ]; then
-  set -a
-  . ./.env
-  set +a
-fi
+INPUT="data_sample/spread_report_all_pairs_long.normalized.csv"
+OUT="reports/strong_signals.csv"
+LOOKBACK_DAYS=90
 
-# Python del venv (assoluto)
-PY="$REPO/venv/bin/python3"
-if [ ! -x "$PY" ]; then
-  echo "[ERROR] venv non trovato: $PY" >&2
-  exit 90
-fi
+mkdir -p reports
 
-INPUT="$REPO/data_sample/spread_report_all_pairs_long.normalized.csv"
-OUT="$REPO/reports/strong_signals.csv"
-LOOKBACK_DAYS=7
+# 1) Export segnali
+python3 scripts/export_from_presets.py \
+  --input "$INPUT" \
+  --presets reports/presets.json \
+  --out "$OUT" \
+  --lookback $LOOKBACK_DAYS
 
-mkdir -p "$REPO/reports"
+# 2) Filtro di regime (z-vol + ADF)
+python3 scripts/filter_regime.py \
+  --input "$OUT" \
+  --out "$OUT" \
+  --data "$INPUT" \
+  --pair-quality reports/pair_quality.csv \
+  --regime-zvol-max 1.2 \
+  --regime-zvol-window 20 \
+  --regime-adf-max 0.30
 
-if [ -s "$REPO/reports/presets.json" ]; then
-  echo "[INFO] Using reports/presets.json"
-  "$PY" "$REPO/scripts/export_from_presets.py" \
-python3 scripts/filter_regime.py --input reports/strong_signals.csv --out reports/strong_signals.csv --data data_sample/spread_report_all_pairs_long.normalized.csv --pair-quality reports/pair_quality.csv --regime-zvol-max 1.2 --regime-zvol-window 20 --regime-adf-max 0.30
-    --input "$INPUT" \
-    --presets "$REPO/reports/presets.json" \
-    --out "$OUT" \
-    --lookback $LOOKBACK_DAYS
-elif [ -s "$REPO/reports/preset_best.json" ]; then
-  echo "[INFO] Using reports/preset_best.json"
-  "$PY" "$REPO/scripts/export_from_preset.py" \
-    --input "$INPUT" \
-    --preset "$REPO/reports/preset_best.json" \
-    --out "$OUT" \
-    --lookback $LOOKBACK_DAYS
-else
-  echo "[WARN] Nessun preset trovato."
-  exit 0
-fi
+# 3) Cooldown anti-spam (3 giorni)
+python3 scripts/postfilter_signals.py "$OUT" "$OUT" 3
 
-"$PY" "$REPO/scripts/send_alerts.py" \
+# 4) Invio alert
+python3 scripts/send_alerts.py \
   --token "${TELEGRAM_TOKEN:-}" \
   --chat-id "${TELEGRAM_CHAT_ID:-}"
 

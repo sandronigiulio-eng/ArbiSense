@@ -1,7 +1,25 @@
 [
   {
+    "pair": "IWDA_AS_EUNL_DE",
+    "created": "2025-10-30T19:46:15+00:00",
+    "folds_active": 5,
+    "oos_total_pnl": 883.88,
+    "params": {
+      "pair": "IWDA_AS_EUNL_DE",
+      "side": "short",
+      "z_enter": 2.4,
+      "z_exit": 1.2,
+      "z_stop": 4.0,
+      "max_hold": 3,
+      "latency": 1,
+      "z_window": 40,
+      "notional": 250000.0,
+      "spread_scale": "auto"
+    }
+  },
+  {
     "pair": "SWDA_L_EUNL_DE",
-    "created": "2025-10-30T18:45:00+00:00",
+    "created": "2025-10-30T19:46:15+00:00",
     "folds_active": 6,
     "oos_total_pnl": 3316.7,
     "params": {
@@ -13,7 +31,7 @@
       "max_hold": 5,
       "latency": 0,
       "z_window": 40,
-      "notional": 250000,
+      "notional": 250000.0,
       "spread_scale": "auto"
     }
   }
