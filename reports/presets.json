@@ -1,24 +1,7 @@
 [
   {
-    "pair": "IWDA_AS_EUNL_DE",
-    "created": "2025-10-30T18:24:12+00:00",
-    "folds_active": 5,
-    "oos_total_pnl": 883.8808397178004,
-    "stats": {
-      "trades": 6,
-      "median_abs_bps": 6.882896061758126,
-      "q95_abs_bps": 37.83439107072575,
-      "max_abs_bps": 47.779188094301,
-      "mr_ratio": 1.0
-    },
-    "params": {
-      "pair": "IWDA_AS_EUNL_DE",
-      "spread_scale": "auto"
-    }
-  },
-  {
     "pair": "SWDA_L_EUNL_DE",
-    "created": "2025-10-30T18:30:00+00:00",
+    "created": "2025-10-30T18:45:00+00:00",
     "folds_active": 6,
     "oos_total_pnl": 3316.7,
     "params": {
