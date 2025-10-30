@@ -94,7 +94,8 @@ for _,r in sub.iterrows():
                          "action": "NEAR_EXIT", "z": zt, "z_enter": z_enter, "z_exit": z_exit,
                          "near_delta": delta})
 
-out = pd.DataFrame(rows)
+out_cols = ["timestamp","pair","side","action","z","z_enter","z_exit","near_delta"]
+out = pd.DataFrame(rows, columns=out_cols) if rows else pd.DataFrame(columns=out_cols)
 out.to_csv(args.out, index=False)
 print(f"[WROTE] {args.out} rows={len(out)}")
 if len(out): print(out.tail(10).to_string(index=False))
