@@ -1,0 +1,11 @@
+{
+  "date": "2025-10-26T22:21:36",
+  "folds": 3,
+  "total_pnl_fixed": 2953.1840757907503,
+  "by_pair": {
+    "SWDA_L_EUNL_DE": 2953.1840757907503
+  },
+  "by_reason_exit": {
+    "MEAN_REVERT": 2953.1840757907503
+  }
+}

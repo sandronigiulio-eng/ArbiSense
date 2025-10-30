@@ -1,0 +1,21 @@
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
+bash: /Users/giulio/Documents/ArbiSense/bin/run_daily.sh: Operation not permitted
+Traceback (most recent call last):
+  File "/Users/giulio/ArbiSense/scripts/export_from_presets.py", line 1, in <module>
+    import argparse, json, pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+Traceback (most recent call last):
+  File "/Users/giulio/ArbiSense/scripts/export_from_preset.py", line 1, in <module>
+    import argparse, json, pandas as pd, numpy as np
+ModuleNotFoundError: No module named 'pandas'
+Traceback (most recent call last):
+  File "/Users/giulio/ArbiSense/scripts/export_from_preset.py", line 1, in <module>
+    import argparse, json, pandas as pd, numpy as np
+ModuleNotFoundError: No module named 'pandas'
+/Users/giulio/ArbiSense/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Users/giulio/ArbiSense/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Users/giulio/ArbiSense/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(

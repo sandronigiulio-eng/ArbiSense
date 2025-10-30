@@ -1,0 +1,18 @@
+[INFO] Using reports/presets.json
+[INFO] Using reports/presets.json
+[WARN] export fallito per SWDA_L_EUNL_DE Command '['python3', 'scripts/export_from_preset.py', '--input', '/Users/giulio/ArbiSense/data_sample/spread_report_all_pairs_long.normalized.csv', '--preset', '/var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmps5wtgwla.json', '--out', '/var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpcb1lcbrp.csv', '--lookback', '7', '--near-delta', '0.3']' returned non-zero exit status 1.
+[WARN] export fallito per VWRL_L_VEVE_AS Command '['python3', 'scripts/export_from_preset.py', '--input', '/Users/giulio/ArbiSense/data_sample/spread_report_all_pairs_long.normalized.csv', '--preset', '/var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpqmnh0ktw.json', '--out', '/var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpk4zptsme.csv', '--lookback', '7', '--near-delta', '0.3']' returned non-zero exit status 1.
+[WROTE] /Users/giulio/ArbiSense/reports/strong_signals.csv rows=0
+[OK] Daily alerts done.
+[INFO] Using reports/presets.json
+[WROTE] /var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpkvcfwp4r.csv rows=0
+[WROTE] /var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpdl9rlo8e.csv rows=0
+[WARN] export fallito per SWDA_L_EUNL_DE No columns to parse from file
+[WARN] export fallito per VWRL_L_VEVE_AS No columns to parse from file
+[WROTE] /Users/giulio/ArbiSense/reports/strong_signals.csv rows=0
+[OK] Daily alerts done.
+[INFO] Using reports/presets.json
+[WROTE] /var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpn0ux8qd7.csv rows=0
+[WROTE] /var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpwy91f575.csv rows=0
+[WROTE] /Users/giulio/ArbiSense/reports/strong_signals.csv rows=0
+[OK] Daily alerts done.

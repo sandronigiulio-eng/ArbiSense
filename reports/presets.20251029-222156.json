@@ -1,0 +1,38 @@
+[
+  {
+    "pair": "SWDA_L_EUNL_DE",
+    "created": "2025-10-29T22:19:26",
+    "folds_active": 6,
+    "oos_total_pnl": 3316.6958853798888,
+    "params": {
+      "pair": "SWDA_L_EUNL_DE",
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "z_stop": 3.6,
+      "max_hold": 5,
+      "latency": 0,
+      "z_window": 40,
+      "side": "short",
+      "notional": 250000.0,
+      "spread_scale": "auto"
+    }
+  },
+  {
+    "pair": "VWRL_L_VEVE_AS",
+    "created": "2025-10-29T22:19:26",
+    "folds_active": 4,
+    "oos_total_pnl": 20.162320825949877,
+    "params": {
+      "pair": "VWRL_L_VEVE_AS",
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "z_stop": 3.6,
+      "max_hold": 5,
+      "latency": 0,
+      "z_window": 40,
+      "side": "short",
+      "notional": 250000.0,
+      "spread_scale": "auto"
+    }
+  }
+]

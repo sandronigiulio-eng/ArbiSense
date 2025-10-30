@@ -1,0 +1,4 @@
+pair,z_enter,z_exit,z_stop,max_hold,latency,z_window,side,notional,spread_scale,sign,oos_total_pnl
+IWDA_AS_EUNL_DE,2.2,1.0,4.0,3,0,40,short,250000.0,auto,1,2785059.3259594035
+VUAA_L_VUSA_L,2.6,1.0,4.0,5,1,40,short,250000.0,auto,1,73722.11258703201
+VWRL_L_VEVE_AS,2.6,1.0,4.0,5,0,40,short,250000.0,auto,1,-205.0899239657931
