@@ -1,19 +1,18 @@
 {
-  "created": "2025-10-27T19:53:25",
-  "decision_rule": "OOS total PnL >= 0 AND active folds >= 3",
-  "folds_active": 7,
-  "oos_total_pnl": 1236.965359992655,
+  "pair": "SWDA_L_EUNL_DE",
+  "created": "2025-10-30T17:14:00",
+  "folds_active": 6,
+  "oos_total_pnl": 3316.6958853798888,
   "params": {
-    "z_enter": 2.0,
-    "z_exit": 2.0,
-    "z_stop": 3.6,
-    "max_hold": 7.0,
-    "latency": 0.0,
-    "spread_scale": 0.0001,
-    "notional": 250000.0,
-    "z_window": 40.0,
-    "sign": -1.0,
     "pair": "SWDA_L_EUNL_DE",
-    "side": "short"
+    "z_enter": 2.2,
+    "z_exit": 1.4,
+    "z_stop": 3.6,
+    "max_hold": 5,
+    "latency": 0,
+    "z_window": 40,
+    "side": "short",
+    "notional": 250000.0,
+    "spread_scale": "auto"
   }
 }
