@@ -21,11 +21,12 @@ python3 scripts/export_from_presets.py \
 
 # 2) Filtro di regime (z-vol + ADF)
 python3 scripts/filter_regime.py \
+python3 scripts/position_guard.py reports/strong_signals.csv reports/strong_signals.csv 120
   --input "$OUT" \
   --out "$OUT" \
   --data "$INPUT" \
   --pair-quality reports/pair_quality.csv \
-  --regime-zvol-max 1.2 \
+  --regime-zvol-max 1.0 \
   --regime-zvol-window 20 \
   --regime-adf-max 0.30
 
@@ -38,3 +39,15 @@ python3 scripts/send_alerts.py \
   --chat-id "${TELEGRAM_CHAT_ID:-}"
 
 echo "[OK] Daily alerts done."
+
+# 5) Riepilogo finale
+if [ -s "$OUT" ]; then
+  echo "[SUMMARY] Segnali per coppia (ultimi $LOOKBACK_DAYS giorni):"
+  python3 - <<'PY'
+import pandas as pd
+df = pd.read_csv("reports/strong_signals.csv")
+print(df.groupby("pair")["action"].count().sort_values(ascending=False).to_string())
+PY
+else
+  echo "[SUMMARY] Nessun segnale oggi."
+fi

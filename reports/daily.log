@@ -41,3 +41,38 @@
 [OK] Regime filter: 23 -> 19 (zvol_max=1.2, win=20, adf_max=0.3)
 [OK] Postfilter: 19 -> 17 righe (cooldown 3 giorni)
 [OK] Daily alerts done.
+[WROTE] /var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmp5vxl4qmt.csv rows=9
+                timestamp            pair  side      action         z  z_enter  z_exit  near_delta
+2025-07-02T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT -1.191248      2.4     1.2         NaN
+2025-07-16T00:00:00+00:00 IWDA_AS_EUNL_DE short ENTER_SHORT  3.737828      2.4     1.2         NaN
+2025-07-17T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT -0.359845      2.4     1.2         NaN
+2025-08-06T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT -0.369787      2.4     1.2         NaN
+2025-09-03T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT -0.295513      2.4     1.2         NaN
+2025-10-01T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT -0.360089      2.4     1.2         NaN
+2025-10-08T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT -0.346125      2.4     1.2         NaN
+2025-10-16T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT -1.259208      2.4     1.2         NaN
+2025-10-20T00:00:00+00:00 IWDA_AS_EUNL_DE short  EXIT_SHORT  0.421751      2.4     1.2         NaN
+[WROTE] /var/folders/cp/1g5q3md16xzclqtt6j52q6980000gn/T/tmpx09cg569.csv rows=14
+                timestamp           pair  side      action        z  z_enter  z_exit  near_delta
+2025-07-10T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.380699      2.2     1.4         NaN
+2025-07-17T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.210929      2.2     1.4         NaN
+2025-07-21T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.385332      2.2     1.4         NaN
+2025-07-23T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.012293      2.2     1.4         NaN
+2025-07-28T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.038267      2.2     1.4         NaN
+2025-08-04T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.391724      2.2     1.4         NaN
+2025-08-07T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 0.731620      2.2     1.4         NaN
+2025-09-03T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 0.641225      2.2     1.4         NaN
+2025-09-25T00:00:00+00:00 SWDA_L_EUNL_DE short ENTER_SHORT 2.345723      2.2     1.4         NaN
+2025-10-01T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 0.708037      2.2     1.4         NaN
+[WROTE] reports/strong_signals.csv rows=23
+                timestamp           pair  side      action        z  z_enter  z_exit  near_delta
+2025-07-10T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.380699      2.2     1.4         NaN
+2025-07-17T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.210929      2.2     1.4         NaN
+2025-07-21T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.385332      2.2     1.4         NaN
+2025-07-23T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.012293      2.2     1.4         NaN
+2025-07-28T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.038267      2.2     1.4         NaN
+2025-08-04T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 1.391724      2.2     1.4         NaN
+2025-08-07T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 0.731620      2.2     1.4         NaN
+2025-09-03T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 0.641225      2.2     1.4         NaN
+2025-09-25T00:00:00+00:00 SWDA_L_EUNL_DE short ENTER_SHORT 2.345723      2.2     1.4         NaN
+2025-10-01T00:00:00+00:00 SWDA_L_EUNL_DE short  EXIT_SHORT 0.708037      2.2     1.4         NaN
