@@ -27,6 +27,7 @@ mkdir -p "$REPO/reports"
 if [ -s "$REPO/reports/presets.json" ]; then
   echo "[INFO] Using reports/presets.json"
   "$PY" "$REPO/scripts/export_from_presets.py" \
+python3 scripts/filter_regime.py --input reports/strong_signals.csv --out reports/strong_signals.csv --data data_sample/spread_report_all_pairs_long.normalized.csv --pair-quality reports/pair_quality.csv --regime-zvol-max 1.2 --regime-zvol-window 20 --regime-adf-max 0.30
     --input "$INPUT" \
     --presets "$REPO/reports/presets.json" \
     --out "$OUT" \
