@@ -37,7 +37,7 @@ python3 scripts/postfilter_signals.py "$OUT" "$OUT" 3
 python3 scripts/postfilter_risk.py reports/strong_signals.csv reports/strong_signals.csv 10 6
 
 # 5) Alert Telegram
-python3 scripts/send_alerts.py \
+# python3 scripts/send_alerts.py \
 python3 scripts/send_alerts_aggregate.py
   --token "${TELEGRAM_TOKEN:-}" \
   --chat-id "${TELEGRAM_CHAT_ID:-}"
