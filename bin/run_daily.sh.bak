@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-
-# 0) Ingest EOD legs
-python3 scripts/ingest_today.py --cfg config/pairs_live.yaml --outdir data_live || true
 set -euo pipefail
 cd "$(dirname "$0")/.."
 [ -d "venv" ] && source venv/bin/activate
@@ -34,11 +31,9 @@ python3 scripts/position_guard.py "$OUT" "$OUT" 120
 
 # 4) Cooldown 3 giorni
 python3 scripts/postfilter_signals.py "$OUT" "$OUT" 3
-python3 scripts/postfilter_risk.py reports/strong_signals.csv reports/strong_signals.csv 10 6
 
 # 5) Alert Telegram
 python3 scripts/send_alerts.py \
-python3 scripts/send_alerts_aggregate.py
   --token "${TELEGRAM_TOKEN:-}" \
   --chat-id "${TELEGRAM_CHAT_ID:-}"
 
