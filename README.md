@@ -1,12 +1,25 @@
-# ArbiSense - MVP
+# ArbiSense — MVP Signals Runner
 
-Breve: piattaforma che segnala disallineamenti di prezzo tra ETF/bond per wealth manager e family office.
+ArbiSense genera segnali mean-reversion su coppie ETF/indici, applica filtri di regime/rischio, invia alert **aggregati su Telegram** e pubblica un export leggero in `public/`.
 
-## Requisiti
-Python 3.8+
-Attivare virtualenv: source venv/bin/activate
-Installare dipendenze: pip install -r requirements.txt
+## Quick start
 
-## Esempio rapido
-1. python scripts/fetch_prices.py SPY IVV
-2. python scripts/calculate_spread.py data_sample/SPY.csv data_sample/IVV.csv
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env
+# Apri .env e inserisci:
+# TELEGRAM_BOT_TOKEN=...
+# TELEGRAM_CHAT_ID=...
+
+# Test Telegram (zsh):
+setopt allexport; source .env; unsetopt allexport
+curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getMe" | jq .ok   # deve stampare true
+
+# Prima run forzata (anche nel weekend):
+ARBISENSE_FORCE=1 ./bin/run_daily.sh
+# Risultati: Telegram ✅, file in reports/ e public/
+
+md

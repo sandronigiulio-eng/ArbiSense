@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ArbiSense — Latest Signals</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;max-width:980px;margin:32px auto;padding:0 16px;line-height:1.4}
+    header{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+    h1{margin:0 0 8px 0}
+    .meta{font-size:.95rem;opacity:.8}
+    table{width:100%;border-collapse:collapse;margin-top:16px}
+    th,td{padding:10px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top;font-size:.95rem}
+    th{background:#f7f7f7}
+    .badge{display:inline-block;padding:2px 8px;border:1px solid #ccc;border-radius:999px;font-size:.8rem}
+    .ok{color:#0a0}
+    .warn{color:#b50}
+    footer{margin-top:28px;font-size:.9rem;opacity:.75}
+    code{background:#f2f2f2;padding:2px 6px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>ArbiSense — Latest Signals</h1>
+      <div class="meta" id="meta">Caricamento…</div>
+    </div>
+    <nav>
+      <a class="badge" href="latest.csv" download>⬇️ Scarica CSV</a>
+    </nav>
+  </header>
+
+  <table id="tbl" hidden>
+    <thead>
+      <tr>
+        <th>Timestamp (UTC)</th>
+        <th>Pair</th>
+        <th>Side</th>
+        <th>Action</th>
+        <th>z</th>
+        <th>z_enter</th>
+        <th>z_exit</th>
+        <th>Near Δ</th>
+        <th>Trade date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <footer>
+    Ultimo export generato dal runner giornaliero (<code>bin/run_daily.sh</code>).
+  </footer>
+
+  <script>
+    async function load() {
+      try {
+        const res = await fetch('latest.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const rows = await res.json();
+        const meta = document.getElementById('meta');
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+          meta.innerHTML = '⚠️ Nessun segnale disponibile.';
+          return;
+        }
+        // meta
+        const ts = rows[0]?.timestamp || '';
+        const pairs = new Set(rows.map(r => r.pair));
+        meta.innerHTML = `Righe: ${rows.length} · Coppie: ${pairs.size} · Ultimo timestamp: ${ts ? ts : 'n/d'}`;
+
+        // table
+        const tbody = document.querySelector('#tbl tbody');
+        tbody.innerHTML = '';
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${r.timestamp ?? ''}</td>
+            <td>${r.pair ?? ''}</td>
+            <td>${r.side ?? ''}</td>
+            <td>${r.action ?? ''}</td>
+            <td>${r.z ?? ''}</td>
+            <td>${r.z_enter ?? ''}</td>
+            <td>${r.z_exit ?? ''}</td>
+            <td>${r.near_delta ?? ''}</td>
+            <td>${r.date ?? ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        document.getElementById('tbl').hidden = false;
+      } catch (e) {
+        document.getElementById('meta').innerHTML = '❌ Errore nel caricamento: ' + e.message;
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

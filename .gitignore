@@ -17,3 +17,10 @@ venv/
 !reports/
 !reports/*.png
 !reports/*.csv
+.env
+.env
+venv/
+__pycache__/
+*.parquet
+data_live/
+reports/archive/
