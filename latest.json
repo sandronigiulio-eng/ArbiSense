@@ -12,6 +12,28 @@
       "near_delta": null
     },
     {
+      "timestamp": "2025-06-18T00:00:00Z",
+      "pair": "SWDA_L_EUNL_DE",
+      "side": "short",
+      "action": "ENTER_SHORT",
+      "z": 2.551,
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "date": "2025-06-18",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-06-26T00:00:00Z",
+      "pair": "SWDA_L_EUNL_DE",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": 1.005,
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "date": "2025-06-26",
+      "near_delta": null
+    },
+    {
       "timestamp": "2025-06-26T00:00:00Z",
       "pair": "VUAA_L_VUSA_L",
       "side": "short",
@@ -31,6 +53,28 @@
       "z_enter": 1.6,
       "z_exit": 0.6,
       "date": "2025-06-30",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-07-02T00:00:00Z",
+      "pair": "SWDA_L_EUNL_DE",
+      "side": "short",
+      "action": "ENTER_SHORT",
+      "z": 2.379,
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "date": "2025-07-02",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-07-07T00:00:00Z",
+      "pair": "SWDA_L_EUNL_DE",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": 1.256,
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "date": "2025-07-07",
       "near_delta": null
     },
     {
@@ -56,6 +100,17 @@
       "near_delta": null
     },
     {
+      "timestamp": "2025-07-17T00:00:00Z",
+      "pair": "SWDA_L_EUNL_DE",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": 1.012,
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "date": "2025-07-17",
+      "near_delta": null
+    },
+    {
       "timestamp": "2025-07-22T00:00:00Z",
       "pair": "VWRL_L_VEVE_AS",
       "side": "short",
@@ -64,6 +119,17 @@
       "z_enter": 1.6,
       "z_exit": 0.6,
       "date": "2025-07-22",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-07-23T00:00:00Z",
+      "pair": "SWDA_L_EUNL_DE",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": 0.82,
+      "z_enter": 2.2,
+      "z_exit": 1.4,
+      "date": "2025-07-23",
       "near_delta": null
     },
     {
@@ -112,10 +178,11 @@
     }
   ],
   "meta": {
-    "generated_at": "2025-11-02T17:17:24.594235+00:00",
+    "generated_at": "2025-11-02T17:21:17.511289+00:00",
     "source": "reports/strong_signals.csv",
-    "count": 10,
+    "count": 16,
     "summary_by_pair": {
+      "SWDA_L_EUNL_DE": 6,
       "VWRL_L_VEVE_AS": 6,
       "VUAA_L_VUSA_L": 4
     }
