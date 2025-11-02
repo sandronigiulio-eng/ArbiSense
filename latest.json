@@ -12,6 +12,17 @@
       "near_delta": null
     },
     {
+      "timestamp": "2025-06-26T00:00:00Z",
+      "pair": "VUAA_L_VUSA_L",
+      "side": "short",
+      "action": "ENTER_SHORT",
+      "z": 2.459,
+      "z_enter": 2.2,
+      "z_exit": 0.6,
+      "date": "2025-06-26",
+      "near_delta": null
+    },
+    {
       "timestamp": "2025-06-30T00:00:00Z",
       "pair": "VWRL_L_VEVE_AS",
       "side": "short",
@@ -20,6 +31,17 @@
       "z_enter": 1.6,
       "z_exit": 0.6,
       "date": "2025-06-30",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-07-08T00:00:00Z",
+      "pair": "VUAA_L_VUSA_L",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": 0.094,
+      "z_enter": 2.2,
+      "z_exit": 0.6,
+      "date": "2025-07-08",
       "near_delta": null
     },
     {
@@ -65,14 +87,37 @@
       "z_exit": 0.6,
       "date": "2025-08-07",
       "near_delta": null
+    },
+    {
+      "timestamp": "2025-09-02T00:00:00Z",
+      "pair": "VUAA_L_VUSA_L",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": -0.603,
+      "z_enter": 2.2,
+      "z_exit": 0.6,
+      "date": "2025-09-02",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-09-19T00:00:00Z",
+      "pair": "VUAA_L_VUSA_L",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": -0.477,
+      "z_enter": 2.2,
+      "z_exit": 0.6,
+      "date": "2025-09-19",
+      "near_delta": null
     }
   ],
   "meta": {
-    "generated_at": "2025-11-02T14:53:07.937002+00:00",
+    "generated_at": "2025-11-02T17:01:22.705853+00:00",
     "source": "reports/strong_signals.csv",
-    "count": 6,
+    "count": 10,
     "summary_by_pair": {
-      "VWRL_L_VEVE_AS": 6
+      "VWRL_L_VEVE_AS": 6,
+      "VUAA_L_VUSA_L": 4
     }
   }
 }
