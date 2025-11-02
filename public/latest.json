@@ -1,0 +1,78 @@
+{
+  "data": [
+    {
+      "timestamp": "2025-06-16T00:00:00Z",
+      "pair": "VWRL_L_VEVE_AS",
+      "side": "short",
+      "action": "ENTER_SHORT",
+      "z": 1.827,
+      "z_enter": 1.6,
+      "z_exit": 0.6,
+      "date": "2025-06-16",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-06-30T00:00:00Z",
+      "pair": "VWRL_L_VEVE_AS",
+      "side": "short",
+      "action": "ENTER_SHORT",
+      "z": 1.642,
+      "z_enter": 1.6,
+      "z_exit": 0.6,
+      "date": "2025-06-30",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-07-11T00:00:00Z",
+      "pair": "VWRL_L_VEVE_AS",
+      "side": "short",
+      "action": "ENTER_SHORT",
+      "z": 1.643,
+      "z_enter": 1.6,
+      "z_exit": 0.6,
+      "date": "2025-07-11",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-07-22T00:00:00Z",
+      "pair": "VWRL_L_VEVE_AS",
+      "side": "short",
+      "action": "ENTER_SHORT",
+      "z": 1.667,
+      "z_enter": 1.6,
+      "z_exit": 0.6,
+      "date": "2025-07-22",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-07-29T00:00:00Z",
+      "pair": "VWRL_L_VEVE_AS",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": 0.413,
+      "z_enter": 1.6,
+      "z_exit": 0.6,
+      "date": "2025-07-29",
+      "near_delta": null
+    },
+    {
+      "timestamp": "2025-08-07T00:00:00Z",
+      "pair": "VWRL_L_VEVE_AS",
+      "side": "short",
+      "action": "EXIT_SHORT",
+      "z": 0.468,
+      "z_enter": 1.6,
+      "z_exit": 0.6,
+      "date": "2025-08-07",
+      "near_delta": null
+    }
+  ],
+  "meta": {
+    "generated_at": "2025-11-02T13:30:03.798397+00:00",
+    "source": "reports/strong_signals.csv",
+    "count": 6,
+    "summary_by_pair": {
+      "VWRL_L_VEVE_AS": 6
+    }
+  }
+}
