@@ -1,0 +1,10 @@
+{
+  "generated_at": "2025-11-08T18:00:42.405916+00:00",
+  "source": "reports/strong_signals.csv",
+  "count": 16,
+  "summary_by_pair": {
+    "SWDA_L_EUNL_DE": 6,
+    "VWRL_L_VEVE_AS": 6,
+    "VUAA_L_VUSA_L": 4
+  }
+}
