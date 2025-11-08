@@ -15,7 +15,16 @@
       "z_window": 40,
       "notional": 250000.0,
       "spread_scale": "auto"
-    }
+    },
+    "z_enter": 2.4,
+    "z_exit": 1.2,
+    "z_stop": 4.0,
+    "max_hold": 3,
+    "latency": 1,
+    "z_window": 40,
+    "notional": 250000,
+    "spread_scale": "auto",
+    "status": "live"
   },
   {
     "pair": "SWDA_L_EUNL_DE",
@@ -33,6 +42,15 @@
       "z_window": 40,
       "notional": 250000.0,
       "spread_scale": "auto"
-    }
+    },
+    "z_enter": 2.2,
+    "z_exit": 1.4,
+    "z_stop": 3.6,
+    "max_hold": 5,
+    "latency": 0,
+    "z_window": 40,
+    "notional": 250000,
+    "spread_scale": "auto",
+    "status": "live"
   }
 ]
