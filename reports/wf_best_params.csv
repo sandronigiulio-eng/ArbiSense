@@ -1,2 +1,2 @@
 pair,z_enter,z_exit,z_stop,max_hold,latency,z_window,side,notional,spread_scale,sign,oos_total_pnl
-VWRL_L_VEVE_AS,2.2,1.0,4.0,3,1,40,short,250000.0,auto,1,-211.47704910060162
+SWDA_L_EUNL_DE,1.6,0.6,4.0,5,1,30,short,250000.0,auto,1,8814.99053262532

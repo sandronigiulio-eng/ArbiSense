@@ -1,7 +1,11 @@
 import pandas as pd, json, numpy as np
 from pathlib import Path
 from collections import Counter
-
+import os
+GATE_OOS_TRUE_MIN = float(os.getenv("GATE_OOS_TRUE_MIN", "0"))
+GATE_FOLDS_MIN    = int(os.getenv("GATE_FOLDS_MIN", "3"))
+GATE_MR_PCT_MIN   = float(os.getenv("GATE_MR_PCT_MIN", "50"))
+GATE_BPS_MIN      = float(os.getenv("GATE_BPS_MIN", "0"))
 TR = Path("reports/wf_trades.true.csv")
 ME = Path("reports/wf_metrics.csv")
 OUT = Path("reports/presets.json")

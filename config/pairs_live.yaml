@@ -1,11 +1,19 @@
 pairs:
-  - pair: IWDA_AS_EUNL_DE
-    a: IWDA.AS       # EUR
-    b: EUNL.DE       # EUR
-    denom: B
-    hedge: ols
-  - pair: SWDA_L_EUNL_DE
-    a: SWDA.L        # GBX (pence)
-    b: EUNL.DE       # EUR
-    denom: B
-    hedge: ols
+- pair: IWDA_AS_EUNL_DE
+  a: IWDA.AS
+  b: EUNL.DE
+  denom: B
+  hedge: ols
+- pair: SWDA_L_EUNL_DE
+  a: SWDA.L
+  b: EUNL.DE
+  denom: B
+  hedge: ols
+- pair: IWDA_AS_XDWD_DE
+  a: IWDA.AS
+  b: XDWD.DE
+  denom: B
+- pair: XDWD_DE_EUNL_DE
+  a: XDWD.DE
+  b: EUNL.DE
+  denom: B
