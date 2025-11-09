@@ -24,3 +24,10 @@ __pycache__/
 *.parquet
 data_live/
 reports/archive/
+# runtime & env
+.env
+venv311/
+data_live/
+reports/*.log
+reports/*.csv
+*.parquet
