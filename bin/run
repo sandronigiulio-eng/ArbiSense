@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# ArbiSense — run script (daily/manual)
+# Usa venv311 se presente (fallback a venv / python di sistema), carica .env,
+# esegue pipeline e invia il recap Telegram (se TELEGRAM_* sono settati).
+
+set -euo pipefail
+
+# Vai alla root del repo
+cd "$(dirname "$0")/.."
+
+# ======================
+# Virtualenv (robusta)
+# ======================
+activate_venv() {
+  if [ -x "venv311/bin/activate" ]; then
+    source "venv311/bin/activate"
+  elif [ -x "venv/bin/activate" ]; then
+    source "venv/bin/activate"
+  else
+    if command -v python3.11 >/dev/null 2>&1; then
+      python3.11 -m venv venv311
+    else
+      python3 -m venv venv311
+    fi
+    source "venv311/bin/activate"
+  fi
+}
+activate_venv
+
+# Python della venv (fallback a sistema)
+PY="${PY:-${VIRTUAL_ENV:+$VIRTUAL_ENV/bin/python3}}"
+PY="${PY:-python3}"
+
+# ======================
+# Env e argomenti
+# ======================
+set -a
+[ -f .env ] && source .env
+set +a
+
+LOOKBACK_DAYS="${LOOKBACK_DAYS:-90}"
+REPORTS_DIR="${REPORTS_DIR:-reports}"
+PRESETS_PATH="${PRESETS_PATH:-reports/presets.json}"
+TZ="${TZ:-Europe/Rome}"
+PUBLISH_MODE="${PUBLISH_MODE:-local}"
+
+NO_TELEGRAM=0
+DRY_RUN=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --since)    shift; [[ "${1:-}" =~ ^[0-9]+$ ]] && LOOKBACK_DAYS="$1" ;;
+    --publish)  shift; PUBLISH_MODE="${1:-local}" ;;
+    --no-telegram) NO_TELEGRAM=1 ;;
+    --dry-run)  DRY_RUN=1 ;;
+    *) : ;; # ignora altro
+  esac
+  shift || true
+done
+
+if [ "$NO_TELEGRAM" = "1" ]; then
+  unset TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID
+fi
+
+mkdir -p "$REPORTS_DIR"
+
+# ======================
+# Pipeline
+# ======================
+
+# 0) Ingest EOD legs (best-effort)
+"$PY" scripts/ingest_today.py --cfg config/pairs_live.yaml --outdir data_live || true
+
+INPUT="data_sample/spread_report_all_pairs_long.normalized.csv"
+OUT="$REPORTS_DIR/strong_signals.csv"
+
+# 1) Export dai presets
+"$PY" scripts/export_from_presets.py \
+  --input "$INPUT" \
+  --presets "$PRESETS_PATH" \
+  --out "$OUT" \
+  --lookback "$LOOKBACK_DAYS"
+
+# 2) Filtro regime (z-vol + ADF)
+"$PY" scripts/filter_regime.py \
+  --input "$OUT" \
+  --out "$OUT" \
+  --data "$INPUT" \
+  --pair-quality "$REPORTS_DIR/pair_quality.csv" \
+  --regime-zvol-max 1.0 \
+  --regime-zvol-window 20 \
+  --regime-adf-max 0.30
+
+# 3) Position guard (no EXIT senza ENTER recente, orfani <=120 giorni)
+"$PY" scripts/position_guard.py "$OUT" "$OUT" 120
+
+# 4) (Opz.) Post-filtri
+if [ -f scripts/postfilter_cooldown.py ]; then
+  "$PY" scripts/postfilter_cooldown.py "$OUT" "$OUT" 3
+fi
+if [ -f scripts/risk_cap.py ]; then
+  "$PY" scripts/risk_cap.py "$OUT" "$OUT"
+fi
+
+# 5) Recap Telegram aggregato
+if [ -f scripts/send_alerts_aggregate.py ]; then
+  "$PY" scripts/send_alerts_aggregate.py \
+    --reports "$REPORTS_DIR" \
+    --presets "$PRESETS_PATH" \
+    --tz "$TZ"
+else
+  echo "[WARN] scripts/send_alerts_aggregate.py non trovato; skip recap Telegram."
+fi
+
+# 6) Publish (placeholder)
+# if [ "$PUBLISH_MODE" = "gh-pages" ] && [ -f scripts/publish_gh_pages.py ]; then
+#   "$PY" scripts/publish_gh_pages.py --reports "$REPORTS_DIR"
+# fi
+
+echo "[OK] Run completato. Lookback=${LOOKBACK_DAYS}, publish=${PUBLISH_MODE}"
