@@ -23,3 +23,7 @@ ARBISENSE_FORCE=1 ./bin/run_daily.sh
 # Risultati: Telegram ✅, file in reports/ e public/
 
 md
+
+## 📊 Snapshot risultati (paper)
+Vedi gli ultimi artefatti in `docs/samples/` (CSV e, se presente, grafico del PnL cumulato).
+
