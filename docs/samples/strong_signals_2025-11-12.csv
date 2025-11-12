@@ -1,0 +1,3 @@
+timestamp,pair,side,action,z,z_enter,z_exit,near_delta
+2025-09-25 00:00:00+00:00,SWDA_L_EUNL_DE,short,ENTER_SHORT,2.345723400311156,2.2,1.4,
+2025-10-01 00:00:00+00:00,SWDA_L_EUNL_DE,short,EXIT_SHORT,0.7080373431539166,2.2,1.4,
