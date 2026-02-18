@@ -1,0 +1,18 @@
+name: demo
+version: 1
+
+# Pairs che vuoi consentire nel piano operativo (filtro su latest.json)
+pairs:
+  - IWDA_AS_EUNL_DE
+
+# Sizing semplice per demo (quanto muovi per trade)
+notional_eur: 1000.0
+
+# Regole operative (solo per ops_plan, demo-friendly)
+ops:
+  max_trades_per_day: 1
+
+# (opzionale per step dopo) cost model - per ora non lo usiamo nei fills
+cost_model:
+  commission_eur: 1.0
+  slippage_bps: 2.5

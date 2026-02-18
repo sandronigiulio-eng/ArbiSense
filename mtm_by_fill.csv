@@ -1,0 +1,3 @@
+date_asof,price_date,horizon_days,pair,leg,side,qty,fill_price,px_next,mtm_eur
+2026-01-29,2026-01-28,0,IWDA_AS_EUNL_DE,A,SELL,4.48833,111.372152,111.400002,-0.124998
+2026-01-29,2026-01-28,0,IWDA_AS_EUNL_DE,B,BUY,4.487525,111.447853,111.419998,-0.124999

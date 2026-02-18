@@ -1,0 +1,2 @@
+{"asof":"2026-02-18","hash":"fee1f8a56876027fb6bae56754592522f081357379e0b398459f88f6d07a0252","payload":{"notes":"Run generated plan placeholder (B starts here).","signals_count":null},"prev":"","run_id":"2026-02-18_201516","ts":"2026-02-18T20:15:22Z","type":"PLAN_CREATED","v":1}
+{"asof":"2026-02-18","hash":"53437ba1776040f74523aea11d605cd102852cd0ae5c0c610234620cc25f9e80","payload":{"pnl_csv":"/Users/giulio/ArbiSense/runs/2026-02-18_201516/outputs/pnl_daily.csv"},"prev":"","run_id":"2026-02-18_201516","ts":"2026-02-18T20:15:22Z","type":"PNL_DAILY","v":1}

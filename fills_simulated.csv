@@ -1,0 +1,3 @@
+date,pair,leg,side,notional_eur,qty,ref_price,fill_price,slippage_bps,commission_eur,slippage_cost_eur,total_cost_eur,a_price,b_price
+2026-01-29,IWDA_AS_EUNL_DE,A,SELL,500.0,4.48833,111.400002,111.372152,2.5,1.0,0.125,1.125,111.400002,111.419998
+2026-01-29,IWDA_AS_EUNL_DE,B,BUY,500.0,4.487525,111.419998,111.447853,2.5,1.0,0.125,1.125,111.400002,111.419998

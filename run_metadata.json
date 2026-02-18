@@ -1,0 +1,72 @@
+{
+  "run_id": "2026-01-28_231456",
+  "run_ts_utc": "2026-01-28T23:14:56Z",
+  "generated_at": "2026-01-28T23:15:02.007128+00:00",
+  "git": {
+    "commit": "194acd1",
+    "dirty": 1
+  },
+  "config": {
+    "path": "config/arbisense.yaml",
+    "sha256": "8058238bc2533bc5609dd6ae7135b6f00c8952c5af75b9e563fc535c823e8629"
+  },
+  "args": "--strategy demo --asof 2025-11-08 --no-telegram --verbose",
+  "params": {
+    "lookback_days": 90,
+    "publish_mode": "local"
+  },
+  "files": {
+    "strong_signals_csv": "strong_signals.csv",
+    "latest_csv": "latest.csv",
+    "latest_json": "latest.json",
+    "run_log": "run.log",
+    "config_snapshot": "arbisense.yaml"
+  },
+  "counts": {
+    "strong_signals_rows": 0,
+    "latest_rows": 0
+  },
+  "python": {
+    "executable": "/Users/giulio/ArbiSense/venv311/bin/python3",
+    "version": "3.11.14"
+  },
+  "inputs_sha256": [
+    {
+      "path": "inputs/arbisense.yaml",
+      "bytes": 439,
+      "sha256": "8058238bc2533bc5609dd6ae7135b6f00c8952c5af75b9e563fc535c823e8629"
+    },
+    {
+      "path": "inputs/pairs_cfg.yaml",
+      "bytes": 230,
+      "sha256": "e36c010fedf93a228ba036bc84bcaafe8f5dd778bb672b95da3746a6831374bf"
+    },
+    {
+      "path": "inputs/presets.json",
+      "bytes": 1633,
+      "sha256": "3d9c8031b35379904fc666c3286a7552763aea7c5d1ffdbf882e392dd5b0d534"
+    }
+  ],
+  "outputs_sha256": [
+    {
+      "path": "outputs/latest.csv",
+      "bytes": 3663,
+      "sha256": "5a9b86f99337fbefb692f62c6f84554f7c8b9430fe0b9ef241a895ca97bbb590"
+    },
+    {
+      "path": "outputs/latest.html",
+      "bytes": 9568,
+      "sha256": "9df92aef998a9530cedb93cd2c0bae82d4f83eebf5f09bbac5589dc92338bec2"
+    },
+    {
+      "path": "outputs/latest.json",
+      "bytes": 10243,
+      "sha256": "60c6dbdf45513366decb3ab2311676adcc84de72a96fed2ac33feb71cde8d189"
+    },
+    {
+      "path": "outputs/strong_signals.csv",
+      "bytes": 3663,
+      "sha256": "5a9b86f99337fbefb692f62c6f84554f7c8b9430fe0b9ef241a895ca97bbb590"
+    }
+  ]
+}

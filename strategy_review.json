@@ -1,0 +1,40 @@
+{
+  "verdict": "WARN",
+  "summary": {
+    "positives": [
+      "Worst day dentro il vincolo giornaliero",
+      "Drawdown entro il limite richiesto"
+    ],
+    "hard_failures": [],
+    "warnings": [
+      "Net P&L non positivo: edge fragile o costi dominanti"
+    ]
+  },
+  "metrics": {
+    "net_pnl": 0.0,
+    "total_cost": 0.0,
+    "cost_drag": null,
+    "max_drawdown_pct": 0.0,
+    "worst_day_pct": 0.0,
+    "num_fills": 2,
+    "trade_days": 1,
+    "fills_per_month": null
+  },
+  "limits": {
+    "max_drawdown_pct": -0.1,
+    "max_daily_return_pct": -0.05,
+    "max_fills_per_month": 40,
+    "max_cost_drag": 0.35
+  },
+  "recommendations": [],
+  "audit": {
+    "run_id": "2026-01-28_173329",
+    "asof": null,
+    "commit": {
+      "commit": "194acd1",
+      "dirty": 1
+    },
+    "config_hash": null,
+    "strategy_sha256": null
+  }
+}

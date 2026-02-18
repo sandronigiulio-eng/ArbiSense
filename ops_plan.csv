@@ -1,0 +1,2 @@
+date,pair,direction,action,notional_eur,rationale
+2026-01-29,IWDA_AS_EUNL_DE,short,ENTER_SHORT,1000.0,"from latest.json (z=59.74, enter=2.40, exit=1.20)"

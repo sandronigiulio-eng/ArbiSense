@@ -1,0 +1,539 @@
+<!doctype html><html><head><meta charset='utf-8'><title>ArbiSense — Demo</title>
+<style>
+body{font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif; margin:24px; color:#111;}
+h1{margin:0 0 6px 0;}
+.muted{color:#666; font-size:14px;}
+.cards{display:flex; gap:12px; margin:14px 0 18px;}
+.card{border:1px solid #e6e6e6; border-radius:14px; padding:12px 14px; min-width:220px;}
+.kpi{font-size:22px; font-weight:700;}
+.tbl{border-collapse:collapse; width:100%; margin:8px 0 18px;}
+.tbl th,.tbl td{border:1px solid #eaeaea; padding:8px 10px; text-align:left; font-size:14px;}
+.tbl th{background:#fafafa;}
+hr{border:none; border-top:1px solid #eee; margin:18px 0;}
+a{color:#0b57d0; text-decoration:none;}
+a:hover{text-decoration:underline;}
+</style>
+</head><body><h1>ArbiSense — Demo (audit-grade)</h1><p class='muted'>Questa demo <b>NON</b> esegue trade reali. Trasforma una strategia (YAML) + dati storici in piano operativo, eseguiti simulati, costi e P&L, salvando tutto in modo ripetibile in <code>runs/&lt;RUN_ID&gt;</code>.</p><div class='cards'><div class='card'><div class='muted'>P&L giorno</div><div class='kpi'>-2,50 €</div></div><div class='card'><div class='muted'>Costi giorno</div><div class='kpi'>2,25 €</div></div><div class='card'><div class='muted'>MTM</div><div class='kpi'>-0,25 €</div></div></div><!-- ARBISENSE_EVAL_BEGIN -->
+<h2>0) Valutazione strategia (audit)</h2>
+<div style="display:flex; align-items:center; gap:12px; margin:8px 0 16px">
+  <span style='display:inline-block;padding:6px 12px;border-radius:999px;background:#f7f0df;color:#92400e;font-weight:700;font-size:14px'>WARN</span>
+  <div style="color:#6b7280;font-size:14px">
+    Run: <b>2026-01-28_175843</b> • asof: <b>2025-11-08</b> • commit: <b>194acd1 (dirty)</b>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px">
+  <div class="card">
+    <div class="h2">Cosa fai bene</div>
+    <ul><li>P&amp;L giornaliero entro il vincolo di rischio</li>
+<li>Drawdown massimo entro il limite richiesto</li>
+<li>Esposizione netta ~0 (operatività market-neutral)</li></ul>
+  </div>
+  <div class="card">
+    <div class="h2">Problemi rilevati</div>
+    <div><b>Hard failures</b><ul><li>—</li></ul></div>
+    <div style="margin-top:8px"><b>Warnings</b><ul><li>Net P&amp;L non positivo: edge fragile oppure costi dominanti</li>
+<li>Costi dominanti rispetto al movimento prezzi (cost-drag ~ 90%)</li>
+<li>Campione molto piccolo (1 giorno operativo): metriche preliminari</li></ul></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div class="h2">Evidenze (metriche chiave)</div>
+  <ul>
+    <li>Net P&amp;L: <b>-2,50 €</b></li>
+    <li>MTM (lordo): -0,25 € • Costi: 2,25 € • cost-drag: <b>90%</b></li>
+    <li>Worst day (stima): 0.0% • Max drawdown: 0.0%</li>
+    <li>Fills: 2 • Trade-days: 1 • Notional: 1.000,00 €</li>
+  </ul>
+  <div style="color:#6b7280;font-size:13px;margin-top:6px">
+    Nota date: <b>asof</b> è il giorno della decisione; <b>price_date</b> è l’ultimo close disponibile usato per il pricing (se asof cade su weekend/festivo, price_date può essere precedente).
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div class="h2">Assunzioni (costi &amp; execution)</div>
+  <ul>
+    <li>Commissione per leg: <b>1,00 €</b></li>
+    <li>Slippage: <b>2.5 bps</b></li>
+    <li>Esecuzione: <b>2 legs</b> (A e B) bilanciate: <b>sì</b></li>
+    <li>Esposizione netta: <b>0,00 €</b> (market-neutral se ~0)</li>
+  </ul>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div class="h2">Cosa fare adesso (prossimo esperimento)</div>
+  <div style="font-weight:700; margin-bottom:6px">Riduci il turnover per far emergere l’edge netto</div>
+  <div><b>Cambia:</b> Aumenta la soglia di ingresso (signal.z_enter) e/o aumenta filters.cooldown_days</div>
+  <div><b>Perché:</b> Se i costi mangiano la maggior parte del risultato, serve meno frequenza o segnali più “forti”.</div>
+  <div><b>Verifica:</b> Nel prossimo run verifica: ↓ fills/mese, ↓ costi, ↑ net_pnl</div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div class="h2">Link rapidi</div>
+  <ul>
+    <li><a href="latest.html">Apri segnali completi (latest.html)</a></li>
+    <li><a href="ops_plan.csv">Apri piano operativo (ops_plan.csv)</a></li>
+    <li><a href="fills_simulated.csv">Apri eseguiti simulati (fills_simulated.csv)</a></li>
+    <li><a href="pnl_daily.csv">Apri P&amp;L giornaliero (pnl_daily.csv)</a></li>
+    <li><a href="position_state.csv">Apri stato posizione (position_state.csv)</a></li>
+    <li><a href="equity_curve.csv">Apri equity curve (equity_curve.csv)</a></li>
+    <li><a href="README_DEMO_IT.html">Apri guida demo (HTML, UTF-8)</a></li>
+  </ul>
+</div>
+<!-- ARBISENSE_EVAL_END -->
+<h2>1) Piano operativo (ops_plan.csv)</h2><table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>date</th>
+      <th>pair</th>
+      <th>direction</th>
+      <th>action</th>
+      <th>notional_eur</th>
+      <th>rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2025-11-08</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>1000.0</td>
+      <td>from latest.json (enter=2.40, exit=1.20)</td>
+    </tr>
+  </tbody>
+</table><h2>2) Eseguiti simulati (fills_simulated.csv)</h2><table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>date</th>
+      <th>pair</th>
+      <th>leg</th>
+      <th>side</th>
+      <th>notional_eur</th>
+      <th>qty</th>
+      <th>ref_price</th>
+      <th>fill_price</th>
+      <th>slippage_bps</th>
+      <th>commission_eur</th>
+      <th>slippage_cost_eur</th>
+      <th>total_cost_eur</th>
+      <th>a_price</th>
+      <th>b_price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2025-11-08</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>A</td>
+      <td>SELL</td>
+      <td>500.0</td>
+      <td>4.597067</td>
+      <td>108.764999</td>
+      <td>108.737808</td>
+      <td>2.5</td>
+      <td>1.0</td>
+      <td>0.125</td>
+      <td>1.125</td>
+      <td>108.764999</td>
+      <td>108.699997</td>
+    </tr>
+    <tr>
+      <td>2025-11-08</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>B</td>
+      <td>BUY</td>
+      <td>500.0</td>
+      <td>4.599816</td>
+      <td>108.699997</td>
+      <td>108.727172</td>
+      <td>2.5</td>
+      <td>1.0</td>
+      <td>0.125</td>
+      <td>1.125</td>
+      <td>108.764999</td>
+      <td>108.699997</td>
+    </tr>
+  </tbody>
+</table><h2>3) P&L giornaliero (pnl_daily.csv)</h2><table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>date_asof</th>
+      <th>price_date</th>
+      <th>starting_equity_eur</th>
+      <th>mtm_pnl_eur</th>
+      <th>costs_day_eur</th>
+      <th>pnl_day_eur</th>
+      <th>ending_equity_eur</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2025-11-08</td>
+      <td>2025-11-06</td>
+      <td>10000.0</td>
+      <td>-0.250001</td>
+      <td>2.25</td>
+      <td>-2.500001</td>
+      <td>9997.499999</td>
+    </tr>
+  </tbody>
+</table><h2>4) Stato posizione + equity (position_state.csv / equity_curve.csv)</h2><table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>date</th>
+      <th>pair</th>
+      <th>position</th>
+      <th>exposure_eur</th>
+      <th>notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2025-11-08</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>-1</td>
+      <td>0.0</td>
+      <td>pos: -1 short spread, +1 long spread, 0 flat</td>
+    </tr>
+  </tbody>
+</table><table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>date_asof</th>
+      <th>equity_eur</th>
+      <th>cum_pnl_eur</th>
+      <th>drawdown_eur</th>
+      <th>drawdown_pct</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2025-05-02</td>
+      <td>9997.468357</td>
+      <td>-2.531643</td>
+      <td>-2.531643</td>
+      <td>-0.000253</td>
+    </tr>
+    <tr>
+      <td>2025-05-04</td>
+      <td>9997.500004</td>
+      <td>-2.499996</td>
+      <td>-2.499996</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-05-05</td>
+      <td>9997.307528</td>
+      <td>-2.692472</td>
+      <td>-2.692472</td>
+      <td>-0.000269</td>
+    </tr>
+    <tr>
+      <td>2025-05-06</td>
+      <td>9997.714881</td>
+      <td>-2.285119</td>
+      <td>-2.285119</td>
+      <td>-0.000229</td>
+    </tr>
+    <tr>
+      <td>2025-05-07</td>
+      <td>9997.391829</td>
+      <td>-2.608171</td>
+      <td>-2.608171</td>
+      <td>-0.000261</td>
+    </tr>
+    <tr>
+      <td>2025-05-08</td>
+      <td>9997.614207</td>
+      <td>-2.385793</td>
+      <td>-2.385793</td>
+      <td>-0.000239</td>
+    </tr>
+    <tr>
+      <td>2025-05-09</td>
+      <td>9997.499597</td>
+      <td>-2.500403</td>
+      <td>-2.500403</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-05-11</td>
+      <td>9997.499999</td>
+      <td>-2.500001</td>
+      <td>-2.500001</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-05-12</td>
+      <td>9997.227422</td>
+      <td>-2.772578</td>
+      <td>-2.772578</td>
+      <td>-0.000277</td>
+    </tr>
+    <tr>
+      <td>2025-05-13</td>
+      <td>9997.669587</td>
+      <td>-2.330413</td>
+      <td>-2.330413</td>
+      <td>-0.000233</td>
+    </tr>
+    <tr>
+      <td>2025-05-14</td>
+      <td>9997.454681</td>
+      <td>-2.545319</td>
+      <td>-2.545319</td>
+      <td>-0.000255</td>
+    </tr>
+    <tr>
+      <td>2025-05-15</td>
+      <td>9997.524753</td>
+      <td>-2.475247</td>
+      <td>-2.475247</td>
+      <td>-0.000248</td>
+    </tr>
+    <tr>
+      <td>2025-05-16</td>
+      <td>9997.549785</td>
+      <td>-2.450215</td>
+      <td>-2.450215</td>
+      <td>-0.000245</td>
+    </tr>
+    <tr>
+      <td>2025-05-18</td>
+      <td>9997.500001</td>
+      <td>-2.499999</td>
+      <td>-2.499999</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-05-19</td>
+      <td>9997.549601</td>
+      <td>-2.450399</td>
+      <td>-2.450399</td>
+      <td>-0.000245</td>
+    </tr>
+    <tr>
+      <td>2025-05-20</td>
+      <td>9997.138328</td>
+      <td>-2.861672</td>
+      <td>-2.861672</td>
+      <td>-0.000286</td>
+    </tr>
+    <tr>
+      <td>2025-05-21</td>
+      <td>9997.879045</td>
+      <td>-2.120955</td>
+      <td>-2.120955</td>
+      <td>-0.000212</td>
+    </tr>
+    <tr>
+      <td>2025-05-22</td>
+      <td>9997.108065</td>
+      <td>-2.891935</td>
+      <td>-2.891935</td>
+      <td>-0.000289</td>
+    </tr>
+    <tr>
+      <td>2025-05-23</td>
+      <td>9997.742042</td>
+      <td>-2.257958</td>
+      <td>-2.257958</td>
+      <td>-0.000226</td>
+    </tr>
+    <tr>
+      <td>2025-05-25</td>
+      <td>9997.500002</td>
+      <td>-2.499998</td>
+      <td>-2.499998</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-05-26</td>
+      <td>9997.601069</td>
+      <td>-2.398931</td>
+      <td>-2.398931</td>
+      <td>-0.000240</td>
+    </tr>
+    <tr>
+      <td>2025-05-27</td>
+      <td>9997.289089</td>
+      <td>-2.710911</td>
+      <td>-2.710911</td>
+      <td>-0.000271</td>
+    </tr>
+    <tr>
+      <td>2025-05-28</td>
+      <td>9997.765209</td>
+      <td>-2.234791</td>
+      <td>-2.234791</td>
+      <td>-0.000223</td>
+    </tr>
+    <tr>
+      <td>2025-05-29</td>
+      <td>9997.499999</td>
+      <td>-2.500001</td>
+      <td>-2.500001</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-05-30</td>
+      <td>9997.687097</td>
+      <td>-2.312903</td>
+      <td>-2.312903</td>
+      <td>-0.000231</td>
+    </tr>
+    <tr>
+      <td>2025-06-01</td>
+      <td>9997.500001</td>
+      <td>-2.499999</td>
+      <td>-2.499999</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-11-06</td>
+      <td>9997.499999</td>
+      <td>-2.500001</td>
+      <td>-2.500001</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2025-11-08</td>
+      <td>9997.499999</td>
+      <td>-2.500001</td>
+      <td>-2.500001</td>
+      <td>-0.000250</td>
+    </tr>
+    <tr>
+      <td>2026-01-22</td>
+      <td>9997.301139</td>
+      <td>-2.698861</td>
+      <td>-2.698861</td>
+      <td>-0.000270</td>
+    </tr>
+    <tr>
+      <td>2026-01-25</td>
+      <td>9997.410966</td>
+      <td>-2.589034</td>
+      <td>-2.589034</td>
+      <td>-0.000259</td>
+    </tr>
+    <tr>
+      <td>2026-01-26</td>
+      <td>9997.499999</td>
+      <td>-2.500001</td>
+      <td>-2.500001</td>
+      <td>-0.000250</td>
+    </tr>
+  </tbody>
+</table><h2>5) Segnali (estratto pulito)</h2><p class='muted'>Mostro solo gli <b>ultimi 12</b> segnali per non affollare la demo. Per lo storico completo: <a href='latest.html'>Apri latest.html</a>.</p><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>timestamp</th>
+      <th>pair</th>
+      <th>side</th>
+      <th>action</th>
+      <th>z_enter</th>
+      <th>z_exit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2025-09-23</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-09-24</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-09-25</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-09-26</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-09-29</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-09-30</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-10-01</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-10-02</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-10-03</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-10-06</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-10-07</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>2025-10-08</td>
+      <td>IWDA_AS_EUNL_DE</td>
+      <td>short</td>
+      <td>ENTER_SHORT</td>
+      <td>2.4</td>
+      <td>1.2</td>
+    </tr>
+  </tbody>
+</table><p class='muted'>Guida: <a href='README_DEMO_IT.md'>README_DEMO_IT.md</a></p></body></html>
